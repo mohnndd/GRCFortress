@@ -1,0 +1,30 @@
+:root {
+  --color-bg: #0f172a;
+  --color-surface: #ffffff;
+  --color-primary: #1e3a5f;
+  --color-primary-light: #2c5282;
+  --color-accent: #c9a227;
+  --color-text: #1a202c;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-error: #c0392b;
+  --color-error-bg: #fdecea;
+
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}

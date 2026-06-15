@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: grc-fortress
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:GRCFortress}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+
+grcfortress:
+  jwt:
+    secret: ${JWT_SECRET:c2VjdXJlLWRldi1vbmx5LWp3dC1zaWduaW5nLWtleS1jaGFuZ2UtbWUtaW4tcHJvZHVjdGlvbi0xMjM0NTY3ODkwfA==}
+    access-token-ttl-minutes: ${JWT_ACCESS_TTL_MINUTES:30}
+    refresh-token-ttl-days: ${JWT_REFRESH_TTL_DAYS:7}
+    mfa-token-ttl-minutes: ${JWT_MFA_TTL_MINUTES:5}
+  security:
+    default-admin:
+      username: admin
+      password: ${DEFAULT_ADMIN_PASSWORD:admin@123}
+      email: admin@grcfortress.local
+    encryption:
+      # SECURITY: base64-encoded 256-bit AES key used to encrypt integration
+      # credentials at rest. This default is for local development only -
+      # MUST be overridden via ENCRYPTION_KEY in any shared/production
+      # deployment. Generate one with: openssl rand -base64 32
+      key: ${ENCRYPTION_KEY:F1HAFVgYR75sMmaHMYODkDTCwUOKnTVtKSJQ+J2FMI4=}
+  mfa:
+    # SECURITY: bypass is a development/initial-setup convenience only.
+    # It MUST be disabled (grcfortress.mfa.bypass-enabled=false) before any
+    # production / SAMA-audited deployment. See SECURITY.md.
+    bypass-enabled: ${MFA_BYPASS_ENABLED:true}
+    bypass-code: ${MFA_BYPASS_CODE:12346}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

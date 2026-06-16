@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { getCurrentUser, type CurrentUser, type TokenResponse } from '../api/authApi';
+import { getCurrentUser, logout as logoutRequest, type CurrentUser, type TokenResponse } from '../api/authApi';
 
 interface AuthContextValue {
   user: CurrentUser | null;
   isAuthenticated: boolean;
   setTokens: (tokens: TokenResponse) => void;
   loadCurrentUser: () => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -26,11 +26,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(currentUser);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     setUser(null);
     setIsAuthenticated(false);
+
+    // Best-effort: revoke the refresh token server-side so it can't be replayed.
+    // Client-side state is already cleared above regardless of whether this succeeds.
+    if (refreshToken) {
+      try {
+        await logoutRequest(refreshToken);
+      } catch {
+        // Ignore - the user is logged out locally either way.
+      }
+    }
   }, []);
 
   const value = useMemo(

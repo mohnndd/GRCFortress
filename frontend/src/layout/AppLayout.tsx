@@ -139,14 +139,22 @@ export function AppLayout() {
   useEffect(() => {
     if (!user) {
       loadCurrentUser().catch(() => {
-        logout();
+        void logout();
         navigate('/login', { replace: true });
       });
     }
   }, []);
 
+  // AppLayout is only mounted for routes other than /change-password, so any
+  // user who still needs to set a password gets redirected there immediately.
+  useEffect(() => {
+    if (user?.mustChangePassword) {
+      navigate('/change-password', { replace: true });
+    }
+  }, [user, navigate]);
+
   function handleLogout() {
-    logout();
+    void logout();
     navigate('/login', { replace: true });
   }
 
@@ -160,7 +168,12 @@ export function AppLayout() {
 
   const allNavItems = [
     ...NAV_ITEMS,
-    ...(user?.roles.includes('ADMIN') ? [{ to: '/admin', label: 'Admin' }] : []),
+    ...(user?.roles.includes('ADMIN')
+      ? [
+          { to: '/admin', label: 'Admin' },
+          { to: '/admin/users', label: 'User management' },
+        ]
+      : []),
   ];
 
   const navLinks = (

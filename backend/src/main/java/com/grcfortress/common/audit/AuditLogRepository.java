@@ -1,5 +1,7 @@
 package com.grcfortress.common.audit;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +18,8 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
             AuditEventType eventType,
             Pageable pageable
     );
+
+    Optional<AuditLog> findTopByOrderByIdDesc();
+
+    Iterable<AuditLog> findAllByOrderByIdAsc();
 }

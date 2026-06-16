@@ -303,6 +303,105 @@
   font-size: 0.875rem;
 }
 
+/* ── New elements ────────────────────────────────────────────────────────── */
+
+.dec-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.dec-search {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.dec-status-filter {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  font-size: 0.875rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.dec-state {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  padding: 16px 0;
+  text-align: center;
+}
+
+.dec-detail-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dec-detail-actions { display: flex; gap: 8px; }
+
+.dec-detail-title {
+  font-size: 1rem;
+  color: var(--color-text);
+  margin: 4px 0 0;
+}
+
+.dec-detail-label {
+  display: block;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+
+.dec-attachment-link {
+  display: inline-block;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  margin-top: 6px;
+}
+
+.dec-attachment-existing,
+.dec-attachment-new {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 4px 0;
+}
+
+.dec-btn-ghost-sm {
+  padding: 5px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.dec-btn-ghost-sm:hover { background: rgba(30,58,95,0.05); }
+
+.dec-btn-danger-sm {
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: rgba(220,38,38,0.08);
+  color: #b91c1c;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.dec-btn-danger-sm:hover { background: rgba(220,38,38,0.15); }
+
 @media (max-width: 1080px) {
   .dec-page {
     flex-direction: column;

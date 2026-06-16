@@ -1,4 +1,4 @@
-import api from './axiosConfig';
+import { apiClient } from './client';
 
 export type IncidentPriority = 'P1' | 'P2' | 'P3';
 export type IncidentStatus = 'OPEN' | 'IN_PROGRESS' | 'CONTAINED' | 'CLOSED' | 'CANCELLED';
@@ -71,47 +71,47 @@ export interface RcaRequest {
 }
 
 export async function listIncidents(): Promise<IncidentSummary[]> {
-  const { data } = await api.get('/incidents');
+  const { data } = await apiClient.get<IncidentSummary[]>('/api/v1/incidents');
   return data;
 }
 
 export async function getIncident(id: number): Promise<IncidentDetail> {
-  const { data } = await api.get(`/incidents/${id}`);
+  const { data } = await apiClient.get<IncidentDetail>(`/api/v1/incidents/${id}`);
   return data;
 }
 
 export async function createIncident(req: IncidentCreateRequest): Promise<IncidentSummary> {
-  const { data } = await api.post('/incidents', req);
+  const { data } = await apiClient.post<IncidentSummary>('/api/v1/incidents', req);
   return data;
 }
 
 export async function updateIncident(id: number, req: IncidentUpdateRequest): Promise<IncidentSummary> {
-  const { data } = await api.put(`/incidents/${id}`, req);
+  const { data } = await apiClient.put<IncidentSummary>(`/api/v1/incidents/${id}`, req);
   return data;
 }
 
 export async function addProgress(id: number, req: ProgressRequest): Promise<IncidentDetail> {
-  const { data } = await api.post(`/incidents/${id}/progress`, req);
+  const { data } = await apiClient.post<IncidentDetail>(`/api/v1/incidents/${id}/progress`, req);
   return data;
 }
 
 export async function uploadNotificationAttachment(id: number, file: File): Promise<IncidentSummary> {
   const form = new FormData();
   form.append('file', file);
-  const { data } = await api.post(`/incidents/${id}/notification-attachment`, form);
+  const { data } = await apiClient.post<IncidentSummary>(`/api/v1/incidents/${id}/notification-attachment`, form);
   return data;
 }
 
 export async function fetchNotificationAttachment(id: number): Promise<string> {
-  const response = await api.get(`/incidents/${id}/notification-attachment`, { responseType: 'blob' });
+  const response = await apiClient.get<Blob>(`/api/v1/incidents/${id}/notification-attachment`, { responseType: 'blob' });
   return URL.createObjectURL(response.data as Blob);
 }
 
 export async function setRca(id: number, req: RcaRequest): Promise<IncidentDetail> {
-  const { data } = await api.put(`/incidents/${id}/rca`, req);
+  const { data } = await apiClient.put<IncidentDetail>(`/api/v1/incidents/${id}/rca`, req);
   return data;
 }
 
 export async function deleteIncident(id: number): Promise<void> {
-  await api.delete(`/incidents/${id}`);
+  await apiClient.delete(`/api/v1/incidents/${id}`);
 }

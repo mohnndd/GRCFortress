@@ -23,7 +23,6 @@ import { ObservationsPage } from './pages/Observations/ObservationsPage';
 import { DelegationPage } from './pages/Delegation/DelegationPage';
 import { IncidentsPage } from './pages/Incidents/IncidentsPage';
 import { FaqPublicPage } from './pages/Faq/FaqPage';
-import { PlaceholderPage } from './pages/Placeholder/PlaceholderPage';
 
 function App() {
   return (

@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import com.fasterxml.uuid.Generators;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,6 +24,11 @@ public class Role {
 
 
     public UUID getUuid() { return uuid; }
+
+    @PrePersist
+    private void assignUuid() {
+        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
+    }
 
     @Column(name = "name", nullable = false, unique = true, length = 64)
     private String name;

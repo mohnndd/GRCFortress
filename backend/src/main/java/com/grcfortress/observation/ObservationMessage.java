@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import com.fasterxml.uuid.Generators;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +28,11 @@ public class ObservationMessage {
 
 
     public UUID getUuid() { return uuid; }
+
+    @PrePersist
+    private void assignUuid() {
+        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "observation_id", nullable = false)

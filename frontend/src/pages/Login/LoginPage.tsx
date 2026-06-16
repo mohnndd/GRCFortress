@@ -1,11 +1,20 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../api/client';
 import { login, verifyMfa } from '../../api/authApi';
 import { useAuth } from '../../auth/AuthContext';
 import { BrandIcon } from '../../components/BrandIcon';
 import './Login.css';
 
 type Step = 'credentials' | 'mfa';
+type ConnectionStatus = 'checking' | 'connected' | 'unavailable';
+const LOGIN_DIAGNOSTICS_KEY = 'grc-show-login-dev-diagnostics';
+
+interface SystemHealthResponse {
+  backendStatus: 'UP' | 'DOWN';
+  databaseStatus: 'UP' | 'DOWN';
+  checkedAt: string;
+}
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -18,6 +27,34 @@ export function LoginPage() {
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<ConnectionStatus>('checking');
+  const [databaseStatus, setDatabaseStatus] = useState<ConnectionStatus>('checking');
+  const showDevDiagnostics = localStorage.getItem(LOGIN_DIAGNOSTICS_KEY) !== 'false';
+
+  useEffect(() => {
+    if (showDevDiagnostics) {
+      checkBackendConnection();
+    }
+  }, [showDevDiagnostics]);
+
+  async function checkBackendConnection() {
+    setBackendStatus('checking');
+    setDatabaseStatus('checking');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/system/health`, { cache: 'no-store' });
+      if (!response.ok) {
+        setBackendStatus('unavailable');
+        setDatabaseStatus('unavailable');
+        return;
+      }
+      const health = await response.json() as SystemHealthResponse;
+      setBackendStatus(health.backendStatus === 'UP' ? 'connected' : 'unavailable');
+      setDatabaseStatus(health.databaseStatus === 'UP' ? 'connected' : 'unavailable');
+    } catch {
+      setBackendStatus('unavailable');
+      setDatabaseStatus('unavailable');
+    }
+  }
 
   async function handleCredentialsSubmit(event: FormEvent) {
     event.preventDefault();
@@ -77,6 +114,41 @@ export function LoginPage() {
           <h1>GRC Fortress</h1>
           <p>Governance, Risk &amp; Compliance Platform</p>
         </div>
+
+        {showDevDiagnostics && (
+          <div className="login-connection-panel">
+            <div className="login-connection-kicker">Development diagnostics</div>
+            <div className={`login-connection-row login-connection-row--${backendStatus}`}>
+              <span className="login-connection-dot" />
+              <div>
+                <strong>
+                  {backendStatus === 'checking'
+                    ? 'Checking backend'
+                    : backendStatus === 'connected'
+                      ? 'Backend connected'
+                      : 'Backend unavailable'}
+                </strong>
+                <span>{API_BASE_URL}</span>
+              </div>
+            </div>
+            <div className={`login-connection-row login-connection-row--${databaseStatus}`}>
+              <span className="login-connection-dot" />
+              <div>
+                <strong>
+                  {databaseStatus === 'checking'
+                    ? 'Checking database'
+                    : databaseStatus === 'connected'
+                      ? 'Database connected'
+                      : 'Database unavailable'}
+                </strong>
+                <span>Confirmed by backend health check</span>
+              </div>
+            </div>
+            <button type="button" onClick={checkBackendConnection} disabled={backendStatus === 'checking'}>
+              Retry
+            </button>
+          </div>
+        )}
 
         {error && <div className="login-error">{error}</div>}
 

@@ -12,6 +12,7 @@ import './Admin.css';
 
 const EMAIL_PROVIDERS = ['SMTP'];
 const SMS_PROVIDERS = ['TWILIO', 'GENERIC_HTTP'];
+const LOGIN_DIAGNOSTICS_KEY = 'grc-show-login-dev-diagnostics';
 
 interface SettingFormState {
   provider: string;
@@ -38,6 +39,9 @@ export function AdminPage() {
   const [smsStatus, setSmsStatus] = useState<string | null>(null);
   const [emailTestTo, setEmailTestTo] = useState('');
   const [smsTestTo, setSmsTestTo] = useState('');
+  const [showLoginDiagnostics, setShowLoginDiagnostics] = useState(
+    () => localStorage.getItem(LOGIN_DIAGNOSTICS_KEY) !== 'false',
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -123,6 +127,11 @@ export function AdminPage() {
     }
   }
 
+  function toggleLoginDiagnostics(enabled: boolean) {
+    setShowLoginDiagnostics(enabled);
+    localStorage.setItem(LOGIN_DIAGNOSTICS_KEY, String(enabled));
+  }
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -138,6 +147,24 @@ export function AdminPage() {
         Configure the outbound email and SMS gateways used for notifications. Secret fields are
         encrypted at rest and left blank means &quot;keep existing value&quot;.
       </p>
+
+      <section className="admin-card admin-card--diagnostics">
+        <h3>Developer Diagnostics</h3>
+        <p className="admin-card-note">
+          The backend and database connection box on the login screen is for development and local setup only.
+        </p>
+        <label className="admin-toggle-row">
+          <input
+            type="checkbox"
+            checked={showLoginDiagnostics}
+            onChange={(event) => toggleLoginDiagnostics(event.target.checked)}
+          />
+          <span>
+            Show login connection diagnostics
+            <em>{showLoginDiagnostics ? 'Visible on login screen' : 'Hidden from login screen'}</em>
+          </span>
+        </label>
+      </section>
 
       <section className="admin-card">
         <h3>Email Integration</h3>

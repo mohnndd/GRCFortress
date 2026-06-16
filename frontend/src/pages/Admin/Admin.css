@@ -26,6 +26,18 @@
   margin-top: 0;
 }
 
+.admin-card-note {
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.admin-card--diagnostics {
+  border-color: #facc15;
+  background: #fffbeb;
+}
+
 .admin-card label {
   margin-top: 12px;
   margin-bottom: 4px;
@@ -46,6 +58,38 @@
   align-items: center;
   gap: 8px;
   display: flex;
+}
+
+.admin-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+  cursor: pointer;
+}
+
+.admin-toggle-row input {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.admin-toggle-row span,
+.admin-toggle-row em {
+  display: block;
+}
+
+.admin-toggle-row span {
+  color: var(--color-primary);
+}
+
+.admin-toggle-row em {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 500;
 }
 
 .admin-hint {

@@ -21,6 +21,7 @@ import { WhistleblowingPage } from './pages/Whistleblowing/WhistleblowingPage';
 import { CircularsPage } from './pages/Circulars/CircularsPage';
 import { ObservationsPage } from './pages/Observations/ObservationsPage';
 import { DelegationPage } from './pages/Delegation/DelegationPage';
+import { IncidentsPage } from './pages/Incidents/IncidentsPage';
 import { PlaceholderPage } from './pages/Placeholder/PlaceholderPage';
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
           <Route path="/decision-registers" element={<DecisionRegisterPage />} />
           <Route path="/contracts-repo" element={<ContractsRepoPage />} />
           <Route path="/risk-register" element={<RiskRegisterPage />} />
-          <Route path="/incidents" element={<PlaceholderPage title="Incident Management" />} />
+          <Route path="/incidents" element={<IncidentsPage />} />
           <Route path="/observations" element={<ObservationsPage />} />
           <Route path="/whistleblowing" element={<WhistleblowingPage />} />
           <Route path="/terms-and-conditions" element={<TermsConditionsPage />} />

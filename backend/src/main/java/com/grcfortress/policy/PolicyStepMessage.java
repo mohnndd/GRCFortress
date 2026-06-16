@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -31,7 +30,7 @@ public class PolicyStepMessage {
 
     @PrePersist
     private void assignUuid() {
-        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
+        if (uuid == null) uuid = UUID.randomUUID();
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

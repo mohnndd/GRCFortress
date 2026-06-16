@@ -3,7 +3,6 @@ package com.grcfortress.common;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -23,7 +22,7 @@ public abstract class AuditableEntity {
 
     @PrePersist
     private void assignUuid() {
-        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
+        if (uuid == null) uuid = UUID.randomUUID();
     }
 
     public UUID getUuid() {

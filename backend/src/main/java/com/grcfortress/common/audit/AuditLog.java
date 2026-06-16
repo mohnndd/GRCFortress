@@ -10,7 +10,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -34,7 +33,7 @@ public class AuditLog {
 
     @PrePersist
     private void assignUuid() {
-        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
+        if (uuid == null) uuid = UUID.randomUUID();
     }
 
     @Enumerated(EnumType.STRING)

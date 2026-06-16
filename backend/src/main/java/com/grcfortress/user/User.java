@@ -139,4 +139,9 @@ public class User extends AuditableEntity {
     public void addRole(Role role) {
         this.roles.add(role);
     }
+
+    public void setEmail(String email) { this.email = email; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public void setMfaEnabled(boolean mfaEnabled) { this.mfaEnabled = mfaEnabled; }
 }

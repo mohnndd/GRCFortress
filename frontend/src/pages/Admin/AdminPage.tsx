@@ -11,11 +11,15 @@ import {
 import {
   listAllFaqPages, createFaqPage, updateFaqPage, deleteFaqPage, type FaqPage,
 } from '../../api/faqApi';
+import {
+  listUsers, createUser, updateUser, resetPassword, unlockUser, deleteUser,
+  type ManagedUser,
+} from '../../api/userApi';
 import './Admin.css';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type AdminTab = 'overview' | 'roles' | 'integrations' | 'faq' | 'diagnostics';
+type AdminTab = 'overview' | 'users' | 'roles' | 'integrations' | 'faq' | 'diagnostics';
 
 interface SettingFormState {
   provider: string;
@@ -488,10 +492,281 @@ function FaqTab() {
   );
 }
 
+// ── Users tab ──────────────────────────────────────────────────────────────
+
+type UserDrawer = 'create' | 'edit' | 'reset';
+
+function UsersTab() {
+  const [users, setUsers] = useState<ManagedUser[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [drawer, setDrawer] = useState<UserDrawer | null>(null);
+  const [selected, setSelected] = useState<ManagedUser | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const [form, setForm] = useState({
+    username: '', email: '', fullName: '', password: '',
+    mfaEnabled: true, enabled: true, accountLocked: false,
+    roleIds: [] as number[],
+  });
+  const [newPassword, setNewPassword] = useState('');
+
+  useEffect(() => {
+    Promise.all([listUsers(), listRoles()])
+      .then(([u, r]) => { setUsers(u); setRoles(r); })
+      .catch(() => setError('Failed to load users.'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  function openCreate() {
+    setSelected(null);
+    setForm({ username: '', email: '', fullName: '', password: '', mfaEnabled: true, enabled: true, accountLocked: false, roleIds: [] });
+    setDrawer('create');
+  }
+
+  function openEdit(u: ManagedUser) {
+    setSelected(u);
+    setForm({
+      username: u.username, email: u.email, fullName: u.fullName, password: '',
+      mfaEnabled: u.mfaEnabled, enabled: u.enabled, accountLocked: u.accountLocked,
+      roleIds: roles.filter((r) => u.roles.includes(r.name)).map((r) => r.id),
+    });
+    setDrawer('edit');
+  }
+
+  function openReset(u: ManagedUser) { setSelected(u); setNewPassword(''); setDrawer('reset'); }
+
+  function toggleRole(roleId: number) {
+    setForm((f) => ({
+      ...f,
+      roleIds: f.roleIds.includes(roleId) ? f.roleIds.filter((id) => id !== roleId) : [...f.roleIds, roleId],
+    }));
+  }
+
+  async function handleCreate(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const u = await createUser({
+        username: form.username.trim(), email: form.email.trim(),
+        fullName: form.fullName.trim(), password: form.password,
+        mfaEnabled: form.mfaEnabled, roleIds: form.roleIds,
+      });
+      setUsers((p) => [...p, u].sort((a, b) => a.username.localeCompare(b.username)));
+      setDrawer(null);
+    } catch { setError('Failed to create user (username or email may already exist).'); }
+    finally { setSaving(false); }
+  }
+
+  async function handleUpdate(e: FormEvent) {
+    e.preventDefault();
+    if (!selected) return;
+    setSaving(true);
+    try {
+      const u = await updateUser(selected.id, {
+        email: form.email.trim(), fullName: form.fullName.trim(),
+        enabled: form.enabled, accountLocked: form.accountLocked,
+        mfaEnabled: form.mfaEnabled, roleIds: form.roleIds,
+      });
+      setUsers((p) => p.map((x) => x.id === u.id ? u : x));
+      setDrawer(null);
+    } catch { setError('Failed to update user.'); }
+    finally { setSaving(false); }
+  }
+
+  async function handleReset(e: FormEvent) {
+    e.preventDefault();
+    if (!selected) return;
+    setSaving(true);
+    try {
+      await resetPassword(selected.id, newPassword);
+      setDrawer(null);
+    } catch { setError('Failed to reset password.'); }
+    finally { setSaving(false); }
+  }
+
+  async function handleUnlock(u: ManagedUser) {
+    const updated = await unlockUser(u.id);
+    setUsers((p) => p.map((x) => x.id === updated.id ? updated : x));
+  }
+
+  async function handleDelete(u: ManagedUser) {
+    if (!window.confirm(`Delete user "${u.username}"? This cannot be undone.`)) return;
+    await deleteUser(u.id);
+    setUsers((p) => p.filter((x) => x.id !== u.id));
+  }
+
+  const filtered = search
+    ? users.filter((u) => u.username.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()) || u.fullName.toLowerCase().includes(search.toLowerCase()))
+    : users;
+
+  if (loading) return <p className="adm-state">Loading users…</p>;
+
+  return (
+    <div className="adm-users-layout">
+      {error && <p className="adm-error">{error}</p>}
+
+      <div className="adm-users-toolbar">
+        <input className="adm-user-search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search users…" />
+        <button className="adm-btn-primary" onClick={openCreate}>+ New user</button>
+      </div>
+
+      <table className="adm-user-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Full name</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Status</th>
+            <th>Last login</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((u) => (
+            <tr key={u.id}>
+              <td className="adm-user-uname">{u.username}</td>
+              <td>{u.fullName}</td>
+              <td className="adm-user-email">{u.email}</td>
+              <td>
+                <div className="adm-user-roles">
+                  {u.roles.map((r) => <span key={r} className="adm-badge adm-badge--role">{r}</span>)}
+                </div>
+              </td>
+              <td>
+                <div className="adm-user-status-flags">
+                  {!u.enabled && <span className="adm-badge adm-badge--inactive">Disabled</span>}
+                  {u.accountLocked && <span className="adm-badge adm-badge--danger">Locked</span>}
+                  {u.enabled && !u.accountLocked && <span className="adm-badge adm-badge--active">Active</span>}
+                  {u.mfaEnabled && <span className="adm-badge adm-badge--mfa">MFA</span>}
+                </div>
+              </td>
+              <td className="adm-user-login">
+                {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : '—'}
+              </td>
+              <td>
+                <div className="adm-user-actions">
+                  <button className="adm-btn-ghost-sm" onClick={() => openEdit(u)}>Edit</button>
+                  <button className="adm-btn-ghost-sm" onClick={() => openReset(u)}>Reset PW</button>
+                  {u.accountLocked && <button className="adm-btn-ghost-sm" onClick={() => handleUnlock(u)}>Unlock</button>}
+                  <button className="adm-btn-danger-sm" onClick={() => handleDelete(u)}>Delete</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+          {filtered.length === 0 && (
+            <tr><td colSpan={7} className="adm-state">No users found.</td></tr>
+          )}
+        </tbody>
+      </table>
+
+      {/* Create drawer */}
+      {drawer === 'create' && (
+        <div className="adm-drawer-overlay" onClick={() => setDrawer(null)}>
+          <div className="adm-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="adm-drawer-header">
+              <h3>Create user</h3>
+              <button className="adm-drawer-close" onClick={() => setDrawer(null)}>✕</button>
+            </div>
+            <form onSubmit={handleCreate} className="adm-user-form">
+              <div className="adm-field-grid">
+                <label>Username *<input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} required /></label>
+                <label>Full name *<input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required /></label>
+                <label>Email *<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
+                <label>Initial password *<input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} /></label>
+              </div>
+              <div className="adm-user-checkboxes">
+                <label className="adm-checkbox-row"><input type="checkbox" checked={form.mfaEnabled} onChange={(e) => setForm({ ...form, mfaEnabled: e.target.checked })} /> Require MFA</label>
+                <label className="adm-checkbox-row"><input type="checkbox" checked={form.enabled} onChange={(e) => setForm({ ...form, enabled: e.target.checked })} /> Account enabled</label>
+              </div>
+              <p className="adm-perms-label">Assign roles</p>
+              <div className="adm-user-role-checks">
+                {roles.map((r) => (
+                  <label key={r.id} className="adm-checkbox-row">
+                    <input type="checkbox" checked={form.roleIds.includes(r.id)} onChange={() => toggleRole(r.id)} />
+                    <span>{r.name}</span>
+                    {r.description && <span className="adm-role-desc">{r.description}</span>}
+                  </label>
+                ))}
+              </div>
+              <div className="adm-drawer-footer">
+                <button className="adm-btn-primary" type="submit" disabled={saving}>{saving ? 'Creating…' : 'Create user'}</button>
+                <button className="adm-btn-ghost" type="button" onClick={() => setDrawer(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit drawer */}
+      {drawer === 'edit' && selected && (
+        <div className="adm-drawer-overlay" onClick={() => setDrawer(null)}>
+          <div className="adm-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="adm-drawer-header">
+              <h3>Edit user — {selected.username}</h3>
+              <button className="adm-drawer-close" onClick={() => setDrawer(null)}>✕</button>
+            </div>
+            <form onSubmit={handleUpdate} className="adm-user-form">
+              <div className="adm-field-grid">
+                <label>Full name *<input value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required /></label>
+                <label>Email *<input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required /></label>
+              </div>
+              <div className="adm-user-checkboxes">
+                <label className="adm-checkbox-row"><input type="checkbox" checked={form.enabled} onChange={(e) => setForm({ ...form, enabled: e.target.checked })} /> Account enabled</label>
+                <label className="adm-checkbox-row"><input type="checkbox" checked={form.accountLocked} onChange={(e) => setForm({ ...form, accountLocked: e.target.checked })} /> Account locked</label>
+                <label className="adm-checkbox-row"><input type="checkbox" checked={form.mfaEnabled} onChange={(e) => setForm({ ...form, mfaEnabled: e.target.checked })} /> Require MFA</label>
+              </div>
+              <p className="adm-perms-label">Assign roles</p>
+              <div className="adm-user-role-checks">
+                {roles.map((r) => (
+                  <label key={r.id} className="adm-checkbox-row">
+                    <input type="checkbox" checked={form.roleIds.includes(r.id)} onChange={() => toggleRole(r.id)} />
+                    <span>{r.name}</span>
+                  </label>
+                ))}
+              </div>
+              <div className="adm-drawer-footer">
+                <button className="adm-btn-primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save changes'}</button>
+                <button className="adm-btn-ghost" type="button" onClick={() => setDrawer(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset password drawer */}
+      {drawer === 'reset' && selected && (
+        <div className="adm-drawer-overlay" onClick={() => setDrawer(null)}>
+          <div className="adm-drawer adm-drawer--sm" onClick={(e) => e.stopPropagation()}>
+            <div className="adm-drawer-header">
+              <h3>Reset password — {selected.username}</h3>
+              <button className="adm-drawer-close" onClick={() => setDrawer(null)}>✕</button>
+            </div>
+            <form onSubmit={handleReset} className="adm-user-form">
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: '0.82rem', fontWeight: 600 }}>
+                New password *
+                <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} />
+              </label>
+              <div className="adm-drawer-footer">
+                <button className="adm-btn-primary" type="submit" disabled={saving}>{saving ? 'Resetting…' : 'Set new password'}</button>
+                <button className="adm-btn-ghost" type="button" onClick={() => setDrawer(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main AdminPage ─────────────────────────────────────────────────────────
 
 const TABS: { id: AdminTab; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '◈' },
+  { id: 'users', label: 'User Management', icon: '👤' },
   { id: 'roles', label: 'Roles & Permissions', icon: '⊕' },
   { id: 'faq', label: 'FAQ Pages', icon: '☰' },
   { id: 'integrations', label: 'Integrations', icon: '⇌' },
@@ -534,6 +809,7 @@ export function AdminPage() {
             </div>
             <div className="adm-overview-grid">
               {[
+                { title: 'User Management', desc: 'Create accounts, assign roles, reset passwords, and manage user access.', tab: 'users' as AdminTab, icon: '👤' },
                 { title: 'Roles & Permissions', desc: 'Create custom roles and assign API endpoint permissions to control access levels.', tab: 'roles' as AdminTab, icon: '⊕' },
                 { title: 'FAQ Pages', desc: 'Manage the public knowledge base. Create, edit, and publish help pages for users.', tab: 'faq' as AdminTab, icon: '☰' },
                 { title: 'Integrations', desc: 'Configure email (SMTP) and SMS gateways used for notifications and alerts.', tab: 'integrations' as AdminTab, icon: '⇌' },
@@ -546,6 +822,16 @@ export function AdminPage() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {tab === 'users' && (
+          <div>
+            <div className="adm-page-header">
+              <h2>User Management</h2>
+              <p className="adm-page-subtitle">Create accounts, assign roles, reset passwords, and manage user status.</p>
+            </div>
+            <UsersTab />
           </div>
         )}
 

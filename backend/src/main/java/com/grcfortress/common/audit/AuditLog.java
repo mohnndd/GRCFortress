@@ -1,9 +1,8 @@
-package com.grcfortress.common.audit;
+﻿package com.grcfortress.common.audit;
 
 import java.time.Instant;
 import java.util.UUID;
 
-import com.fasterxml.uuid.Generators;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,7 +10,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 /**
@@ -29,10 +27,6 @@ public class AuditLog {
     @Column(name = "uuid", unique = true, nullable = false, updatable = false, columnDefinition = "uuid")
     private UUID uuid;
 
-    @PrePersist
-    private void assignUuid() {
-        if (uuid == null) uuid = Generators.timeBasedEpochGenerator().generate();
-    }
 
     public UUID getUuid() { return uuid; }
 

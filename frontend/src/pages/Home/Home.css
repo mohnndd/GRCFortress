@@ -281,3 +281,146 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Live dashboard additions ─────────────────────────────────────── */
+
+.home-empty {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  padding: 12px 0 4px;
+}
+
+.home-card-link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.home-action-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-action-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.home-action-item:last-child { border-bottom: none; }
+
+.home-action-item:hover { background: rgba(30,58,95,0.03); margin: 0 -18px; padding: 12px 18px; }
+
+.home-action-type-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.home-action-type {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.home-action-type--policy {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.home-action-type--procedure {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.home-delegated-badge {
+  font-size: 0.72rem;
+  color: #7a5b00;
+  background: rgba(201,162,39,0.15);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.home-action-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.home-action-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.home-action-dept { font-weight: 500; }
+
+/* Circular list */
+.home-circular-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.home-circular-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.home-circular-item:last-child { border-bottom: none; }
+
+.home-circular-number {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1e40af;
+  background: #dbeafe;
+  border-radius: 4px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.home-circular-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.home-circular-issuer {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-circular-dept {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.home-circular-date {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}

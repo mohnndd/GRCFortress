@@ -153,34 +153,51 @@ export function ReportedItemsPage() {
             <p className="reported-state">No reported issues or suggestions yet.</p>
           )}
           {!loading && items.length > 0 && (
-            <div className="reported-grid">
-              {items.map((item) => (
-                <button
-                  key={item.id}
-                  className={`reported-card${selected?.id === item.id ? ' reported-card--active' : ''}`}
-                  type="button"
-                  onClick={() => openDetail(item.id)}
-                >
-                  <div className="reported-card-top">
-                    <span className={`reported-type reported-type--${item.reportType.toLowerCase()}`}>
-                      {item.reportType}
-                    </span>
-                    <span className={`reported-status reported-status--${item.status.toLowerCase().replace('_', '-')}`}>
-                      {STATUS_LABEL[item.status]}
-                    </span>
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.description}</p>
-                  <div className="reported-card-meta">
-                    <span>{item.reporterUsername}</span>
-                    <span>{formatDate(item.createdAt)}</span>
-                  </div>
-                  {item.attachmentFileName && (
-                    <span className="reported-attachment-note">{item.attachmentFileName}</span>
-                  )}
-                </button>
-              ))}
-            </div>
+            <table className="reported-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Title</th>
+                  <th>Reporter</th>
+                  <th>Status</th>
+                  <th>Attachment</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr
+                    key={item.id}
+                    className={`reported-table-row${selected?.id === item.id ? ' reported-table-row--selected' : ''}`}
+                    onClick={() => openDetail(item.id)}
+                  >
+                    <td>
+                      <span className={`reported-type reported-type--${item.reportType.toLowerCase()}`}>
+                        {item.reportType}
+                      </span>
+                    </td>
+                    <td className="reported-col-title">
+                      <span className="reported-title-text">{item.title}</span>
+                      {item.description && (
+                        <span className="reported-desc-preview">{item.description}</span>
+                      )}
+                    </td>
+                    <td className="reported-col-reporter">{item.reporterUsername}</td>
+                    <td>
+                      <span className={`reported-status reported-status--${item.status.toLowerCase().replace('_', '-')}`}>
+                        {STATUS_LABEL[item.status]}
+                      </span>
+                    </td>
+                    <td className="reported-col-attach">
+                      {item.attachmentFileName
+                        ? <span className="reported-attach-badge">File</span>
+                        : <span className="reported-no-attach">—</span>}
+                    </td>
+                    <td className="reported-col-date">{formatDate(item.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </section>
 

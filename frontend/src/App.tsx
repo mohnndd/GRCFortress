@@ -20,6 +20,7 @@ import { ContractsRepoPage } from './pages/ContractsRepo/ContractsRepoPage';
 import { WhistleblowingPage } from './pages/Whistleblowing/WhistleblowingPage';
 import { CircularsPage } from './pages/Circulars/CircularsPage';
 import { ObservationsPage } from './pages/Observations/ObservationsPage';
+import { DelegationPage } from './pages/Delegation/DelegationPage';
 import { PlaceholderPage } from './pages/Placeholder/PlaceholderPage';
 
 function App() {
@@ -41,10 +42,7 @@ function App() {
           <Route path="/procedures" element={<ProceduresPage />} />
           <Route path="/circulars" element={<CircularsPage />} />
           <Route path="/departments" element={<DepartmentsPage />} />
-          <Route
-            path="/delegation-of-authority"
-            element={<PlaceholderPage title="Delegation of Authority Management" />}
-          />
+          <Route path="/delegation-of-authority" element={<DelegationPage />} />
           <Route path="/decision-registers" element={<DecisionRegisterPage />} />
           <Route path="/contracts-repo" element={<ContractsRepoPage />} />
           <Route path="/risk-register" element={<RiskRegisterPage />} />

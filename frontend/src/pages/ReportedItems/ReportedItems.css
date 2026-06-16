@@ -315,3 +315,94 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Grid (table) view ───────────────────────────────────────────── */
+
+.reported-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.reported-table thead tr {
+  border-bottom: 2px solid var(--color-border);
+}
+
+.reported-table th {
+  padding: 10px 14px;
+  color: var(--color-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.reported-table-row {
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.reported-table-row:hover {
+  background: rgba(30, 58, 95, 0.04);
+}
+
+.reported-table-row--selected {
+  background: rgba(30, 58, 95, 0.07);
+}
+
+.reported-table-row td {
+  padding: 11px 14px;
+  vertical-align: middle;
+}
+
+.reported-col-title {
+  max-width: 380px;
+}
+
+.reported-title-text {
+  display: block;
+  font-weight: 600;
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reported-desc-preview {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reported-col-reporter {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.reported-col-attach,
+.reported-col-date {
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.reported-attach-badge {
+  display: inline-block;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 7px;
+}
+
+.reported-no-attach {
+  color: var(--color-text-muted);
+}

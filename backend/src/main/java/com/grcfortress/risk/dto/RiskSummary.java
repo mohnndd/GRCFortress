@@ -1,0 +1,42 @@
+package com.grcfortress.risk.dto;
+
+import java.time.Instant;
+import java.time.LocalDate;
+
+public record RiskSummary(
+        Long id,
+        String riskNumber,
+        String title,
+        String description,
+        Long domainId,
+        String domainName,
+        Long categoryId,
+        String categoryName,
+        String riskOwnerUsername,
+        String status,
+        int inherentLikelihood,
+        int inherentImpactFinancial,
+        int inherentImpactOperational,
+        int inherentImpactRegulatory,
+        int inherentImpactReputational,
+        int inherentCompositeImpact,
+        int inherentScore,
+        int residualLikelihood,
+        int residualImpactFinancial,
+        int residualImpactOperational,
+        int residualImpactRegulatory,
+        int residualImpactReputational,
+        int residualCompositeImpact,
+        int residualScore,
+        Integer targetRiskScore,
+        String treatmentOption,
+        String treatmentPlan,
+        String riskVelocity,
+        String relatedRegulations,
+        String reviewFrequency,
+        LocalDate nextReviewDate,
+        LocalDate lastReviewDate,
+        Instant createdAt,
+        Instant updatedAt,
+        String createdBy
+) {}

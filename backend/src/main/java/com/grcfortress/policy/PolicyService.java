@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.grcfortress.delegation.DelegationService;
 import com.grcfortress.department.Department;
 import com.grcfortress.department.DepartmentRepository;
 import com.grcfortress.department.DepartmentStakeholder;
@@ -37,6 +38,7 @@ public class PolicyService {
     private final DepartmentStakeholderRepository stakeholderRepository;
     private final PolicyFileService fileService;
     private final UserRepository userRepository;
+    private final DelegationService delegationService;
 
     public PolicyService(PolicyRepository policyRepository,
                          PolicyVersionRepository versionRepository,
@@ -47,7 +49,8 @@ public class PolicyService {
                          DepartmentRepository departmentRepository,
                          DepartmentStakeholderRepository stakeholderRepository,
                          PolicyFileService fileService,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         DelegationService delegationService) {
         this.policyRepository = policyRepository;
         this.versionRepository = versionRepository;
         this.versionFileRepository = versionFileRepository;
@@ -58,6 +61,7 @@ public class PolicyService {
         this.stakeholderRepository = stakeholderRepository;
         this.fileService = fileService;
         this.userRepository = userRepository;
+        this.delegationService = delegationService;
     }
 
     // ── List ────────────────────────────────────────────────────────────────
@@ -489,9 +493,14 @@ public class PolicyService {
         DepartmentStakeholder actor = step.getDelegatedTo() != null
                 ? step.getDelegatedTo()
                 : step.getAssignedTo();
-        if (actor == null || !actor.getEmailUsername().equalsIgnoreCase(currentUsername)) {
-            throw new AccessDeniedException("You are not the active approver for this step");
+        if (actor != null && actor.getEmailUsername().equalsIgnoreCase(currentUsername)) {
+            return; // direct match
         }
+        // Check if current user has an active delegation from the assigned actor
+        if (actor != null && delegationService.isDelegatedBy(actor.getEmailUsername(), currentUsername)) {
+            return;
+        }
+        throw new AccessDeniedException("You are not the active approver for this step");
     }
 
     // ── Mappers ─────────────────────────────────────────────────────────────

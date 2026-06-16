@@ -277,6 +277,123 @@
   font-size: 0.88rem;
 }
 
+.circulars-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.circulars-btn-ghost {
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.circulars-btn-danger {
+  border: none;
+  border-radius: 7px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #b42318;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.circulars-btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.circulars-state {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-top: 32px;
+  text-align: center;
+}
+
+.circulars-col-attachment {
+  white-space: nowrap;
+}
+
+.circulars-attachment-badge {
+  display: inline-block;
+  border-radius: 4px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.circulars-no-attachment {
+  color: var(--color-text-muted);
+}
+
+.circulars-attachment-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  margin-top: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.circulars-attachment-button:hover {
+  background: #e8f0fa;
+}
+
+.circulars-attachment-meta {
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.circulars-no-attachment-note {
+  margin-top: 18px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.circulars-file-note {
+  margin: -10px 0 12px;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.circulars-file-note--existing {
+  color: #1e40af;
+}
+
+.circulars-detail-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--color-border);
+}
+
 @media (max-width: 1040px) {
   .circulars-page {
     flex-direction: column;

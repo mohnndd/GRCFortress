@@ -13,8 +13,8 @@ overridden for any shared/production deployment).
 | `JWT_SECRET` | HMAC signing key for access/refresh/MFA JWTs | insecure dev key — **must change** |
 | `JWT_ACCESS_TTL_MINUTES`, `JWT_REFRESH_TTL_DAYS`, `JWT_MFA_TTL_MINUTES` | Token lifetimes | 30 / 7 / 5 |
 | `DEFAULT_ADMIN_PASSWORD` | Initial `admin` account password (rotate after first login) | `admin@123` |
-| `MFA_BYPASS_ENABLED` | **Must be `false` in production** — disables the `12346` MFA bypass | `true` |
-| `MFA_BYPASS_CODE` | Only relevant if bypass is enabled (dev only) | `12346` |
+| `MFA_BYPASS_ENABLED` | **Must be `false` in production** — disables the `123456` MFA bypass | `true` |
+| `MFA_BYPASS_CODE` | Only relevant if bypass is enabled (dev only) | `123456` |
 | `ENCRYPTION_KEY` | Base64 256-bit AES key encrypting integration credentials at rest (`integration_settings.secrets`) — generate with `openssl rand -base64 32` | insecure dev key — **must change** |
 
 See [SECURITY.md](../SECURITY.md) for the security rationale behind each of

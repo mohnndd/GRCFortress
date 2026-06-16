@@ -1,0 +1,349 @@
+.wb-page {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.wb-main {
+  flex: 1;
+  padding: 32px 36px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.wb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.wb-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.wb-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.wb-panel {
+  max-width: 860px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--color-border);
+  padding: 16px 18px;
+  background: #f8fafc;
+}
+
+.wb-panel-header h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.wb-panel-header span {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wb-form {
+  padding: 18px;
+}
+
+.wb-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.wb-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.wb-form input,
+.wb-form select,
+.wb-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 8px 11px;
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.wb-form textarea {
+  resize: vertical;
+}
+
+.wb-attachments {
+  margin-bottom: 16px;
+}
+
+.wb-file-upload {
+  justify-content: center;
+  min-height: 86px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--color-primary) !important;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.wb-file-upload:hover {
+  border-color: var(--color-primary);
+  background: #f1f5f9;
+}
+
+.wb-file-upload input {
+  display: none;
+}
+
+.wb-attachment-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.wb-attachment-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background: #fff;
+  padding: 10px 11px;
+}
+
+.wb-attachment-item strong,
+.wb-attachment-item span {
+  display: block;
+}
+
+.wb-attachment-item strong {
+  color: var(--color-text);
+  font-size: 0.86rem;
+  word-break: break-word;
+}
+
+.wb-attachment-item span {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.wb-attachment-item button {
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background: #fff;
+  color: #b42318;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wb-checkbox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 10px !important;
+}
+
+.wb-checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
+.wb-identity-note,
+.wb-recipient {
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  background: #f8fafc;
+  padding: 11px 12px;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  margin-bottom: 16px;
+}
+
+.wb-identity-note--visible {
+  border-color: #fca5a5;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.wb-recipient span,
+.wb-recipient strong,
+.wb-recipient em {
+  display: block;
+}
+
+.wb-recipient span {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wb-recipient strong {
+  color: var(--color-primary);
+  margin-top: 4px;
+}
+
+.wb-recipient em {
+  margin-top: 3px;
+  font-style: normal;
+}
+
+.wb-error {
+  color: #b42318;
+  font-size: 0.875rem;
+}
+
+.wb-success {
+  color: #065f46;
+  font-size: 0.875rem;
+}
+
+.wb-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--color-border);
+  padding-top: 14px;
+}
+
+.wb-btn-primary {
+  border: none;
+  border-radius: 7px;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 8px 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wb-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.46);
+}
+
+.wb-warning-modal {
+  width: min(460px, 100%);
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  border-radius: 8px;
+  background: var(--color-surface);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  padding: 22px;
+}
+
+.wb-warning-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #b45309;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.wb-warning-kicker {
+  margin: 0 0 5px;
+  color: #b45309;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.wb-warning-modal h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 1.12rem;
+}
+
+.wb-warning-modal p {
+  margin: 10px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.wb-warning-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.wb-btn-secondary,
+.wb-btn-danger {
+  border-radius: 7px;
+  padding: 8px 13px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wb-btn-secondary {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-primary);
+}
+
+.wb-btn-danger {
+  border: 1px solid #dc2626;
+  background: #dc2626;
+  color: #fff;
+}
+
+@media (max-width: 780px) {
+  .wb-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wb-warning-actions {
+    flex-direction: column-reverse;
+  }
+
+  .wb-btn-secondary,
+  .wb-btn-danger {
+    width: 100%;
+  }
+}

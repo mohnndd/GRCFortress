@@ -1,0 +1,59 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - the-machine
+
+    env:
+      DEPLOY_PATH: /home/mohnndd/apps/grc-fortress
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ''
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build backend
+        working-directory: backend
+        run: |
+          ./mvnw -B -DskipTests package
+
+      - name: Publish release
+        run: |
+          frontend_release_dir="$DEPLOY_PATH/releases/${GITHUB_SHA}"
+          backend_release_dir="$DEPLOY_PATH/backend/releases/${GITHUB_SHA}"
+
+          mkdir -p "$frontend_release_dir" "$backend_release_dir"
+          cp -a frontend/dist/. "$frontend_release_dir/"
+          cp backend/target/backend-*.jar "$backend_release_dir/backend.jar"
+
+          ln -sfn "$backend_release_dir/backend.jar" "$DEPLOY_PATH/backend/current.jar"
+          chmod -R a+rX "$frontend_release_dir" "$backend_release_dir"
+
+          sudo /usr/bin/systemctl restart grc-fortress-backend.service
+          sleep 10
+
+          ln -sfn "$frontend_release_dir" "$DEPLOY_PATH/current"
+
+          find "$DEPLOY_PATH/releases" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -n | head -n -5 | cut -d' ' -f2- | xargs -r rm -rf
+          find "$DEPLOY_PATH/backend/releases" -mindepth 1 -maxdepth 1 -type d -printf '%T@ %p\n' | sort -n | head -n -5 | cut -d' ' -f2- | xargs -r rm -rf

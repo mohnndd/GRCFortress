@@ -1,0 +1,361 @@
+/* ── Observation-specific extensions to Policies.css ─────────────────────── */
+
+/* Status badges for observations */
+.obs-badge-open {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.obs-badge-in-progress {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.obs-badge-pending-closure {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.obs-badge-closed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* Flow arrow between depts */
+.obs-dept-flow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.obs-dept-name {
+  font-weight: 600;
+  color: var(--color-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.obs-dept-arrow {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+/* Detail header row */
+.obs-detail-header {
+  margin-bottom: 14px;
+}
+
+.obs-detail-number {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.obs-detail-flow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  margin: 6px 0 10px;
+}
+
+.obs-detail-flow .obs-dept-name {
+  max-width: none;
+}
+
+/* Date row */
+.obs-dates {
+  display: flex;
+  gap: 20px;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+.obs-date-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.obs-date-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.obs-date-value {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.obs-date-value--unset {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Field sections in detail */
+.obs-section {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.obs-section:last-child {
+  border-bottom: none;
+}
+
+.obs-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 8px;
+}
+
+.obs-section-body {
+  font-size: 0.875rem;
+  color: var(--color-text);
+  line-height: 1.65;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.obs-section-empty {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Regulation badge */
+.obs-regulation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.obs-file-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  padding: 3px 9px;
+  background: var(--color-background);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.obs-file-link:hover {
+  background: #eff6ff;
+}
+
+/* Action panels */
+.obs-action-panel {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: #f8fafc;
+}
+
+.obs-action-panel--confirm {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.obs-action-panel--closure {
+  border-color: #6ee7b7;
+  background: #f0fdf4;
+}
+
+.obs-action-panel--review {
+  border-color: #fbbf24;
+  background: #fffbeb;
+}
+
+.obs-action-panel--closed {
+  border-color: #6ee7b7;
+  background: #f0fdf4;
+}
+
+.obs-action-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 10px;
+}
+
+.obs-action-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.obs-btn-accept {
+  background: #059669;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.obs-btn-accept:hover { background: #047857; }
+.obs-btn-accept:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.obs-btn-reject {
+  background: none;
+  border: 1.5px solid #fca5a5;
+  color: #b91c1c;
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.obs-btn-reject:hover { background: #fef2f2; }
+.obs-btn-reject:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Closure request history */
+.obs-closure-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.obs-closure-card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: var(--color-background);
+  font-size: 0.85rem;
+}
+
+.obs-closure-card--pending { border-color: #fbbf24; }
+.obs-closure-card--accepted { border-color: #6ee7b7; }
+.obs-closure-card--rejected { border-color: #fca5a5; }
+
+.obs-closure-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.obs-closure-card-meta {
+  font-size: 0.77rem;
+  color: var(--color-text-muted);
+}
+
+.obs-closure-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.obs-closure-status--PENDING { background: #fef3c7; color: #92400e; }
+.obs-closure-status--ACCEPTED { background: #d1fae5; color: #065f46; }
+.obs-closure-status--REJECTED { background: #fee2e2; color: #991b1b; }
+
+.obs-closure-notes {
+  color: var(--color-text);
+  margin: 4px 0;
+  white-space: pre-wrap;
+}
+
+.obs-closure-rejection {
+  color: #b91c1c;
+  font-style: italic;
+  margin: 4px 0;
+}
+
+/* Closed banner */
+.obs-closed-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #065f46;
+  margin-bottom: 16px;
+}
+
+/* Discussion thread (obs-specific) */
+.obs-thread-section {
+  margin-top: 8px;
+}
+
+.obs-thread-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  margin: 0 0 10px;
+}
+
+/* Table column widths */
+.obs-col-flow {
+  min-width: 160px;
+}
+
+/* File input styling */
+.obs-file-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.obs-file-chosen {
+  font-size: 0.82rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.obs-file-none {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,99 @@
+.admin-page h2 {
+  margin-top: 0;
+}
+
+.admin-intro {
+  color: var(--color-text-muted);
+  max-width: 720px;
+}
+
+.admin-error {
+  color: #b42318;
+}
+
+.admin-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 24px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card h3 {
+  margin-top: 0;
+}
+
+.admin-card label {
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-card input,
+.admin-card select {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.admin-checkbox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.admin-hint {
+  color: var(--color-text-muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.admin-actions {
+  margin-top: 16px;
+}
+
+.admin-actions button {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.admin-test-row {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.admin-test-row input {
+  flex: 1;
+}
+
+.admin-test-row button {
+  background: var(--color-accent);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-test-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.admin-status {
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}

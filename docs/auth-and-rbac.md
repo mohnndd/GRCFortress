@@ -10,7 +10,7 @@
 
 2. `POST /api/v1/auth/mfa/verify` with `{ mfaToken, code }`.
    - If `grcfortress.mfa.bypass-enabled=true` (default in dev), the code
-     `grcfortress.mfa.bypass-code` (default `12346`) is always accepted —
+     `grcfortress.mfa.bypass-code` (default `123456`) is always accepted —
      **this MUST be disabled in production**, see [SECURITY.md](../SECURITY.md).
    - On success, returns `{ accessToken, refreshToken, tokenType: "Bearer" }`.
    - Audit events: `MFA_CHALLENGE_ISSUED`, `MFA_VERIFICATION_SUCCESS` /

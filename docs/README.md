@@ -35,7 +35,7 @@ relevant to the change you're making.
    key) and the encrypted `integration_settings` table for admin-configurable
    per-deployment credentials (SMTP/SMS). See [deployment.md](deployment.md)
    and [integrations.md](integrations.md).
-5. **The MFA bypass code (`12346`) is a development convenience only.** It is
+5. **The MFA bypass code (`123456`) is a development convenience only.** It is
    gated by `grcfortress.mfa.bypass-enabled` and MUST be `false` in any
    production/SAMA-audited deployment. See [SECURITY.md](../SECURITY.md).
 6. **New GRC modules follow the existing package-per-domain structure**

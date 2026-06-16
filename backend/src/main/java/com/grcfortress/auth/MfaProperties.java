@@ -11,7 +11,7 @@ public class MfaProperties {
      */
     private boolean bypassEnabled = true;
 
-    private String bypassCode = "12346";
+    private String bypassCode = "123456";
 
     public boolean isBypassEnabled() {
         return bypassEnabled;

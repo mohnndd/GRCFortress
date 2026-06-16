@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import com.grcfortress.auth.JwtProperties;
 import com.grcfortress.auth.MfaProperties;
+import com.grcfortress.config.CompanyProperties;
 import com.grcfortress.config.DefaultAdminProperties;
 import com.grcfortress.config.EncryptionProperties;
 
 @SpringBootApplication
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
-@EnableConfigurationProperties({JwtProperties.class, MfaProperties.class, DefaultAdminProperties.class, EncryptionProperties.class})
+@EnableConfigurationProperties({JwtProperties.class, MfaProperties.class, DefaultAdminProperties.class, EncryptionProperties.class, CompanyProperties.class})
 public class GrcFortressApplication {
 
 	public static void main(String[] args) {

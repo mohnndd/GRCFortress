@@ -65,7 +65,7 @@ cd backend
 The API starts on `http://localhost:8080`. Swagger UI is available at
 `http://localhost:8080/swagger-ui.html`.
 
-Default admin credentials: `admin` / `admin@123` (MFA bypass code: `12346` —
+Default admin credentials: `admin` / `admin@123` (MFA bypass code: `123456` —
 see [SECURITY.md](SECURITY.md)).
 
 ### Frontend
@@ -90,7 +90,7 @@ Key environment variables (backend):
 | `DB_USERNAME` / `DB_PASSWORD` | `postgres` / `postgres` | PostgreSQL credentials |
 | `JWT_SECRET` | dev default | HMAC signing key for JWTs — **must** be overridden in production |
 | `MFA_BYPASS_ENABLED` | `true` | Enables the static MFA bypass code (dev only) |
-| `MFA_BYPASS_CODE` | `12346` | Static MFA bypass code |
+| `MFA_BYPASS_CODE` | `123456` | Static MFA bypass code |
 | `DEFAULT_ADMIN_PASSWORD` | `admin@123` | Password for the seeded `admin` account |
 
 ## License

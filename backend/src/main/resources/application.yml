@@ -2,6 +2,12 @@ spring:
   application:
     name: grc-fortress
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 55MB
+
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:GRCFortress}
     username: ${DB_USERNAME:postgres}
@@ -55,7 +61,11 @@ grcfortress:
     # It MUST be disabled (grcfortress.mfa.bypass-enabled=false) before any
     # production / SAMA-audited deployment. See SECURITY.md.
     bypass-enabled: ${MFA_BYPASS_ENABLED:true}
-    bypass-code: ${MFA_BYPASS_CODE:12346}
+    bypass-code: ${MFA_BYPASS_CODE:123456}
+  company:
+    # Domain enforced as the suffix for every stakeholder's email address,
+    # e.g. an email username of "cto" becomes "cto@<email-domain>".
+    email-domain: ${COMPANY_EMAIL_DOMAIN:grcfortress.local}
 
 management:
   endpoints:

@@ -7,7 +7,7 @@ before any production or audited deployment:
 ## 1. MFA bypass code
 
 For initial setup and local development, `grcfortress.mfa.bypass-enabled=true`
-allows the static code `12346` to satisfy the MFA challenge
+allows the static code `123456` to satisfy the MFA challenge
 (`grcfortress.mfa.bypass-code`).
 
 **This MUST be disabled before production / SAMA-audited deployment**:

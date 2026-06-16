@@ -22,6 +22,7 @@ import { CircularsPage } from './pages/Circulars/CircularsPage';
 import { ObservationsPage } from './pages/Observations/ObservationsPage';
 import { DelegationPage } from './pages/Delegation/DelegationPage';
 import { IncidentsPage } from './pages/Incidents/IncidentsPage';
+import { FaqPublicPage } from './pages/Faq/FaqPage';
 import { PlaceholderPage } from './pages/Placeholder/PlaceholderPage';
 
 function App() {
@@ -54,6 +55,7 @@ function App() {
           <Route path="/sla" element={<SlaPage />} />
           <Route path="/audit-trail" element={<AuditTrailPage />} />
           <Route path="/reported-issues-suggestions" element={<ReportedItemsPage />} />
+          <Route path="/faq" element={<FaqPublicPage />} />
           <Route
             path="/admin"
             element={

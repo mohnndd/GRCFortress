@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { to: '/sla', label: 'SLA configuration' },
   { to: '/audit-trail', label: 'Audit trail' },
   { to: '/reported-issues-suggestions', label: 'Reported issue/suggestion' },
+  { to: '/faq', label: 'Help & FAQ' },
 ];
 
 function getStoredLayout(): NavLayout {

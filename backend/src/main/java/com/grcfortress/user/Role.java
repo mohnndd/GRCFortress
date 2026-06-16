@@ -35,18 +35,30 @@ public class Role {
     @Column(name = "description")
     private String description;
 
-    protected Role() {
+    @Column(name = "is_system", nullable = false)
+    private boolean isSystem = false;
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
+    protected Role() {}
+
+    public Role(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public boolean isSystem() { return isSystem; }
+    public void setSystem(boolean system) { isSystem = system; }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 }

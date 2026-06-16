@@ -1,5 +1,6 @@
 package com.grcfortress.user;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,7 @@ public class RoleController {
 
     public RoleController(RoleRepository roleRepository,
                           RolePermissionRepository permissionRepository,
-                          RequestMappingHandlerMapping handlerMapping) {
+                          @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping) {
         this.roleRepository = roleRepository;
         this.permissionRepository = permissionRepository;
         this.handlerMapping = handlerMapping;

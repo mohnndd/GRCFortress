@@ -92,6 +92,10 @@ public class User extends AuditableEntity {
         return passwordHash;
     }
 
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
     public boolean isMfaEnabled() {
         return mfaEnabled;
     }

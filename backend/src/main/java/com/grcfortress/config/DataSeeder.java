@@ -38,21 +38,24 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        if (userRepository.existsByUsernameIgnoreCase(defaultAdminProperties.getUsername())) {
-            return;
-        }
-
         Role adminRole = roleRepository.findByName(RoleName.ADMIN)
                 .orElseThrow(() -> new IllegalStateException("ADMIN role missing - check Flyway migrations"));
 
-        User admin = new User(
-                defaultAdminProperties.getUsername(),
-                defaultAdminProperties.getEmail(),
-                "System Administrator",
-                passwordEncoder.encode(defaultAdminProperties.getPassword()),
-                true);
-        admin.addRole(adminRole);
-
-        userRepository.save(admin);
+        userRepository.findByUsernameIgnoreCase(defaultAdminProperties.getUsername())
+                .ifPresentOrElse(
+                        existing -> {
+                            existing.setPasswordHash(passwordEncoder.encode(defaultAdminProperties.getPassword()));
+                            userRepository.save(existing);
+                        },
+                        () -> {
+                            User admin = new User(
+                                    defaultAdminProperties.getUsername(),
+                                    defaultAdminProperties.getEmail(),
+                                    "System Administrator",
+                                    passwordEncoder.encode(defaultAdminProperties.getPassword()),
+                                    true);
+                            admin.addRole(adminRole);
+                            userRepository.save(admin);
+                        });
     }
 }

@@ -55,6 +55,9 @@ public class PolicyApprovalStep extends AuditableEntity {
     @Column(name = "comments", columnDefinition = "TEXT")
     private String comments;
 
+    @Column(name = "activated_at")
+    private Instant activatedAt;
+
     @Column(name = "decided_at")
     private Instant decidedAt;
 
@@ -87,6 +90,9 @@ public class PolicyApprovalStep extends AuditableEntity {
 
     public String getComments() { return comments; }
     public void setComments(String comments) { this.comments = comments; }
+
+    public Instant getActivatedAt() { return activatedAt; }
+    public void setActivatedAt(Instant activatedAt) { this.activatedAt = activatedAt; }
 
     public Instant getDecidedAt() { return decidedAt; }
     public void setDecidedAt(Instant decidedAt) { this.decidedAt = decidedAt; }

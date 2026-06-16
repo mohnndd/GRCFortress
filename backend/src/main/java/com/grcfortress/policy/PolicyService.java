@@ -425,7 +425,9 @@ public class PolicyService {
             DepartmentStakeholder head =
                     stakeholderRepository.findByDepartmentIdAndIsHeadTrue(dept.getId()).orElseThrow();
             StepStatus stepStatus = (order == 1) ? StepStatus.ACTIVE : StepStatus.PENDING;
-            stepRepository.save(new PolicyApprovalStep(cycle, dept, order, head, stepStatus));
+            PolicyApprovalStep step = new PolicyApprovalStep(cycle, dept, order, head, stepStatus);
+            if (order == 1) step.setActivatedAt(Instant.now());
+            stepRepository.save(step);
             order++;
         }
 
@@ -442,6 +444,7 @@ public class PolicyService {
 
         if (next.isPresent()) {
             next.get().setStatus(StepStatus.ACTIVE);
+            next.get().setActivatedAt(Instant.now());
             stepRepository.save(next.get());
             cycle.setCurrentStepOrder(next.get().getStepOrder());
             cycleRepository.save(cycle);

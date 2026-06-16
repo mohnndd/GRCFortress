@@ -33,6 +33,9 @@ jobs:
           npm ci
           npm run build
 
+      - name: Strip BOM from source files
+        run: find backend/src -name "*.java" -exec sed -i 's/^\xEF\xBB\xBF//' {} +
+
       - name: Build backend
         working-directory: backend
         run: |

@@ -1,4 +1,4 @@
-﻿package com.grcfortress.user;
+package com.grcfortress.user;
 
 import java.util.UUID;
 

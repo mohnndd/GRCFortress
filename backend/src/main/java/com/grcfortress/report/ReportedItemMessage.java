@@ -1,4 +1,4 @@
-﻿package com.grcfortress.report;
+package com.grcfortress.report;
 
 import java.time.Instant;
 import java.util.UUID;

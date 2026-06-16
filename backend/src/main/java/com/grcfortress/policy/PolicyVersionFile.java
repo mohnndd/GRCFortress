@@ -1,4 +1,4 @@
-﻿package com.grcfortress.policy;
+package com.grcfortress.policy;
 
 import java.time.Instant;
 import java.util.UUID;

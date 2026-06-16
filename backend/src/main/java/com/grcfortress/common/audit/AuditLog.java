@@ -1,4 +1,4 @@
-﻿package com.grcfortress.common.audit;
+package com.grcfortress.common.audit;
 
 import java.time.Instant;
 import java.util.UUID;

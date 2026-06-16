@@ -44,6 +44,32 @@ These are stored encrypted in the database (via `ENCRYPTION_KEY` above), not
 in environment variables, so they survive redeploys and can be changed
 without ops involvement.
 
+## Before production: paginate all grid/list views
+
+Only `AuditTrailPage` (`GET /api/v1/audit-trail`) is paginated today — it
+accepts `page`/`size`/filters and returns a page-shaped response. Every
+other list/grid view that fetches from the backend currently calls a
+`listX()` endpoint that returns the *entire* table as a plain array with no
+`page`/`size` params:
+
+- Policies (`listPolicies`), Procedures (`listProcedures`), Departments
+  (`listDepartments`), Observations (`listObservations`), Reported issues
+  (`listReportedItems`), Admin user management (`listUsers`).
+
+A few pages (Circulars, Risk register, Decision register, Contracts repo,
+SLA configuration, Terms & conditions) currently render hardcoded local
+mock data rather than calling a backend list endpoint at all — when those
+are wired up to real APIs, build them paginated from the start rather than
+adding pagination as a follow-up.
+
+Before going to production, go through every grid/list view above and: add
+`page`/`size` (and any filter) params to the backend endpoint following the
+`AuditTrailController`/`AuditTrailPageResponse` pattern, and update the
+corresponding frontend page to request and render pages instead of the full
+table. Unpaginated "load everything" endpoints are a correctness issue, not
+just a performance one, once a table has enough rows that the UI silently
+truncates or the request times out.
+
 ## Running locally
 
 ```bash

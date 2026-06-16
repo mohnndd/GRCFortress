@@ -19,9 +19,16 @@ import com.grcfortress.common.audit.dto.AuditTrailPageResponse;
 public class AuditTrailController {
 
     private final AuditLogRepository auditLogRepository;
+    private final AuditService auditService;
 
-    public AuditTrailController(AuditLogRepository auditLogRepository) {
+    public AuditTrailController(AuditLogRepository auditLogRepository, AuditService auditService) {
         this.auditLogRepository = auditLogRepository;
+        this.auditService = auditService;
+    }
+
+    @GetMapping("/integrity")
+    public AuditChainVerificationResult verifyIntegrity() {
+        return auditService.verifyChain();
     }
 
     @GetMapping

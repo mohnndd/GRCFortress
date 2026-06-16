@@ -2,6 +2,7 @@ package com.grcfortress.observation;
 
 import java.time.LocalDate;
 
+import com.grcfortress.circular.Circular;
 import com.grcfortress.common.AuditableEntity;
 import com.grcfortress.department.Department;
 
@@ -57,6 +58,10 @@ public class Observation extends AuditableEntity {
     private ObservationStatus status = ObservationStatus.OPEN;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "linked_circular_id")
+    private Circular linkedCircular;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_department_id", nullable = false)
     private Department creatorDepartment;
 
@@ -95,6 +100,9 @@ public class Observation extends AuditableEntity {
 
     public String getRegulationFilePath() { return regulationFilePath; }
     public void setRegulationFilePath(String regulationFilePath) { this.regulationFilePath = regulationFilePath; }
+
+    public Circular getLinkedCircular() { return linkedCircular; }
+    public void setLinkedCircular(Circular linkedCircular) { this.linkedCircular = linkedCircular; }
 
     public LocalDate getProposedTargetDate() { return proposedTargetDate; }
     public void setProposedTargetDate(LocalDate proposedTargetDate) { this.proposedTargetDate = proposedTargetDate; }

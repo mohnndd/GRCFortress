@@ -43,6 +43,9 @@ export interface ObservationDetail extends ObservationListItem {
   isRegulationRelated: boolean;
   regulationFileName: string | null;
   regulationFilePath: string | null;
+  linkedCircularId: number | null;
+  linkedCircularNumber: string | null;
+  linkedCircularIssuer: string | null;
   messages: ObservationMessageDto[];
   closureRequests: ClosureRequestDto[];
   currentUserIsInCreatorDept: boolean;
@@ -67,6 +70,7 @@ export async function createObservation(form: {
   proposedTargetDate?: string;
   receivingDepartmentId: number;
   regulationFile?: File;
+  linkedCircularId?: number | null;
 }): Promise<ObservationListItem> {
   const fd = new FormData();
   fd.append('name', form.name);
@@ -76,6 +80,7 @@ export async function createObservation(form: {
   if (form.proposedTargetDate) fd.append('proposedTargetDate', form.proposedTargetDate);
   fd.append('receivingDepartmentId', String(form.receivingDepartmentId));
   if (form.regulationFile) fd.append('regulationFile', form.regulationFile);
+  if (form.linkedCircularId != null) fd.append('linkedCircularId', String(form.linkedCircularId));
   const { data } = await apiClient.post<ObservationListItem>('/api/v1/observations', fd, {
     headers: { 'Content-Type': undefined },
   });

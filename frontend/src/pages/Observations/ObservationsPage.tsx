@@ -18,6 +18,7 @@ import {
   type ObservationStatus,
 } from '../../api/observationApi';
 import { listDepartments, type Department } from '../../api/departmentApi';
+import { listCirculars, type CircularSummary } from '../../api/circularApi';
 import '../Policies/Policies.css';
 import './Observations.css';
 
@@ -83,7 +84,9 @@ interface CreateForm {
   receivingDepartmentId: string;
   controlViolation: string;
   isRegulationRelated: boolean;
+  regulationMode: 'upload' | 'circular';
   regulationFile: File | null;
+  linkedCircularId: string;
   proposedTargetDate: string;
 }
 
@@ -93,7 +96,9 @@ const EMPTY_FORM: CreateForm = {
   receivingDepartmentId: '',
   controlViolation: '',
   isRegulationRelated: false,
+  regulationMode: 'upload',
   regulationFile: null,
+  linkedCircularId: '',
   proposedTargetDate: '',
 };
 
@@ -103,6 +108,7 @@ export function ObservationsPage() {
   const { user } = useAuth();
   const [observations, setObservations] = useState<ObservationListItem[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [circulars, setCirculars] = useState<CircularSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
 
@@ -142,8 +148,8 @@ export function ObservationsPage() {
   const [msgError, setMsgError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([listObservations(), listDepartments()])
-      .then(([o, d]) => { setObservations(o); setDepartments(d); })
+    Promise.all([listObservations(), listDepartments(), listCirculars()])
+      .then(([o, d, c]) => { setObservations(o); setDepartments(d); setCirculars(c); })
       .catch(() => setPageError('Failed to load data.'))
       .finally(() => setLoading(false));
   }, []);
@@ -182,7 +188,9 @@ export function ObservationsPage() {
         isRegulationRelated: form.isRegulationRelated,
         proposedTargetDate: form.proposedTargetDate || undefined,
         receivingDepartmentId: Number(form.receivingDepartmentId),
-        regulationFile: form.regulationFile ?? undefined,
+        regulationFile: form.regulationMode === 'upload' ? (form.regulationFile ?? undefined) : undefined,
+        linkedCircularId: form.regulationMode === 'circular' && form.linkedCircularId
+          ? Number(form.linkedCircularId) : null,
       });
       setObservations((p) => [created, ...p]);
       setDrawerMode(null);
@@ -477,7 +485,14 @@ export function ObservationsPage() {
                   <input
                     type="checkbox"
                     checked={form.isRegulationRelated}
-                    onChange={(e) => setField('isRegulationRelated', e.target.checked)}
+                    onChange={(e) => {
+                      setField('isRegulationRelated', e.target.checked);
+                      if (!e.target.checked) {
+                        setField('regulationFile', null);
+                        setField('linkedCircularId', '');
+                        setField('regulationMode', 'upload');
+                      }
+                    }}
                     style={{ width: 'auto' }}
                   />
                   Is related to a regulation or circular?
@@ -485,32 +500,89 @@ export function ObservationsPage() {
               </div>
 
               {form.isRegulationRelated && (
-                <div className="pol-field">
-                  <label>Attach regulation / circular document</label>
-                  <div className="obs-file-input-wrapper">
-                    <button
-                      type="button"
-                      className="pol-btn-ghost pol-btn-sm"
-                      onClick={() => regulationFileRef.current?.click()}
-                    >
-                      Choose file
-                    </button>
-                    {form.regulationFile
-                      ? <span className="obs-file-chosen">{form.regulationFile.name}</span>
-                      : <span className="obs-file-none">No file chosen</span>}
+                <>
+                  <div className="pol-field">
+                    <label style={{ marginBottom: 6 }}>How would you like to reference it?</label>
+                    <div className="obs-reg-mode-toggle">
+                      <label className={`obs-reg-mode-option${form.regulationMode === 'upload' ? ' obs-reg-mode-option--active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="regulationMode"
+                          value="upload"
+                          checked={form.regulationMode === 'upload'}
+                          onChange={() => {
+                            setField('regulationMode', 'upload');
+                            setField('linkedCircularId', '');
+                          }}
+                        />
+                        Upload a document
+                      </label>
+                      <label className={`obs-reg-mode-option${form.regulationMode === 'circular' ? ' obs-reg-mode-option--active' : ''}`}>
+                        <input
+                          type="radio"
+                          name="regulationMode"
+                          value="circular"
+                          checked={form.regulationMode === 'circular'}
+                          onChange={() => {
+                            setField('regulationMode', 'circular');
+                            setField('regulationFile', null);
+                          }}
+                        />
+                        Link to a circular
+                      </label>
+                    </div>
                   </div>
-                  <input
-                    ref={regulationFileRef}
-                    type="file"
-                    style={{ display: 'none' }}
-                    accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0] ?? null;
-                      setField('regulationFile', f);
-                      e.target.value = '';
-                    }}
-                  />
-                </div>
+
+                  {form.regulationMode === 'upload' && (
+                    <div className="pol-field">
+                      <label>Regulation / circular document</label>
+                      <div className="obs-file-input-wrapper">
+                        <button
+                          type="button"
+                          className="pol-btn-ghost pol-btn-sm"
+                          onClick={() => regulationFileRef.current?.click()}
+                        >
+                          Choose file
+                        </button>
+                        {form.regulationFile
+                          ? <span className="obs-file-chosen">{form.regulationFile.name}</span>
+                          : <span className="obs-file-none">No file chosen</span>}
+                      </div>
+                      <input
+                        ref={regulationFileRef}
+                        type="file"
+                        style={{ display: 'none' }}
+                        accept=".pdf,.docx,.doc,.png,.jpg,.jpeg"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0] ?? null;
+                          setField('regulationFile', f);
+                          e.target.value = '';
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {form.regulationMode === 'circular' && (
+                    <div className="pol-field">
+                      <label>Select circular</label>
+                      {circulars.length === 0 ? (
+                        <p className="obs-reg-no-circulars">No circulars have been recorded yet.</p>
+                      ) : (
+                        <select
+                          value={form.linkedCircularId}
+                          onChange={(e) => setField('linkedCircularId', e.target.value)}
+                        >
+                          <option value="">— Select a circular —</option>
+                          {circulars.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.circularNumber} — {c.issuer}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
 
               {createError && <p className="pol-error">{createError}</p>}
@@ -592,6 +664,17 @@ export function ObservationsPage() {
                       <button className="obs-file-link" onClick={openRegulationFile}>
                         📄 {selectedObs.regulationFileName}
                       </button>
+                    </div>
+                  )}
+
+                  {/* Linked circular */}
+                  {selectedObs.linkedCircularId && (
+                    <div className="obs-section">
+                      <p className="obs-section-title">Linked Circular</p>
+                      <div className="obs-linked-circular">
+                        <span className="obs-linked-circular-number">{selectedObs.linkedCircularNumber}</span>
+                        <span className="obs-linked-circular-issuer">{selectedObs.linkedCircularIssuer}</span>
+                      </div>
                     </div>
                   )}
 

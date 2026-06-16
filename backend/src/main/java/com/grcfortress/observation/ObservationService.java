@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.grcfortress.circular.Circular;
+import com.grcfortress.circular.CircularRepository;
 import com.grcfortress.department.Department;
 import com.grcfortress.department.DepartmentRepository;
 import com.grcfortress.department.DepartmentStakeholder;
@@ -30,6 +32,7 @@ public class ObservationService {
     private final ObservationFileService fileService;
     private final DepartmentStakeholderRepository stakeholderRepository;
     private final DepartmentRepository departmentRepository;
+    private final CircularRepository circularRepository;
 
     public ObservationService(
             ObservationRepository observationRepository,
@@ -37,13 +40,15 @@ public class ObservationService {
             ObservationClosureRequestRepository closureRequestRepository,
             ObservationFileService fileService,
             DepartmentStakeholderRepository stakeholderRepository,
-            DepartmentRepository departmentRepository) {
+            DepartmentRepository departmentRepository,
+            CircularRepository circularRepository) {
         this.observationRepository = observationRepository;
         this.messageRepository = messageRepository;
         this.closureRequestRepository = closureRequestRepository;
         this.fileService = fileService;
         this.stakeholderRepository = stakeholderRepository;
         this.departmentRepository = departmentRepository;
+        this.circularRepository = circularRepository;
     }
 
     @Transactional(readOnly = true)
@@ -83,6 +88,7 @@ public class ObservationService {
             boolean isRegulationRelated,
             LocalDate proposedTargetDate,
             Long receivingDepartmentId,
+            Long linkedCircularId,
             String currentUsername) {
 
         DepartmentStakeholder stakeholder = stakeholderRepository
@@ -105,6 +111,11 @@ public class ObservationService {
         obs.setRegulationRelated(isRegulationRelated);
         obs.setProposedTargetDate(proposedTargetDate);
         obs.setStatus(ObservationStatus.OPEN);
+
+        if (linkedCircularId != null) {
+            Circular circular = circularRepository.findById(linkedCircularId).orElse(null);
+            obs.setLinkedCircular(circular);
+        }
 
         // Save first so we have an id for file storage
         obs = observationRepository.save(obs);
@@ -275,6 +286,7 @@ public class ObservationService {
             inReceiving = userDeptId.equals(o.getReceivingDepartment().getId());
         }
 
+        Circular linked = o.getLinkedCircular();
         return new ObservationDetail(
                 o.getId(),
                 o.getObservationNumber(),
@@ -292,6 +304,9 @@ public class ObservationService {
                 o.isRegulationRelated(),
                 o.getRegulationFileName(),
                 o.getRegulationFilePath(),
+                linked != null ? linked.getId() : null,
+                linked != null ? linked.getCircularNumber() : null,
+                linked != null ? linked.getIssuer() : null,
                 messages,
                 closureRequests,
                 inCreator,

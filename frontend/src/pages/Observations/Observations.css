@@ -359,3 +359,66 @@
   font-size: 0.82rem;
   color: var(--color-text-muted);
 }
+
+.obs-reg-mode-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.obs-reg-mode-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.obs-reg-mode-option input[type="radio"] {
+  width: auto;
+  accent-color: var(--color-primary);
+}
+
+.obs-reg-mode-option--active {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: rgba(30, 58, 95, 0.04);
+}
+
+.obs-reg-no-circulars {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.obs-linked-circular {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.obs-linked-circular-number {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1e40af;
+  background: #dbeafe;
+  border-radius: 4px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.obs-linked-circular-issuer {
+  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}

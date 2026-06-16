@@ -76,11 +76,12 @@ public class ObservationController {
             @RequestParam(value = "proposedTargetDate", required = false)
                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate proposedTargetDate,
             @RequestParam("receivingDepartmentId") Long receivingDepartmentId,
+            @RequestParam(value = "linkedCircularId", required = false) Long linkedCircularId,
             Principal principal) {
         return observationService.createObservation(
                 regulationFile, name, description, controlViolation,
                 isRegulationRelated, proposedTargetDate, receivingDepartmentId,
-                principal.getName());
+                linkedCircularId, principal.getName());
     }
 
     @PostMapping("/{id}/confirm-date")

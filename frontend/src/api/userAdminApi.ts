@@ -22,21 +22,21 @@ export interface CreateUserRequest {
 }
 
 export async function listUsers(): Promise<UserSummary[]> {
-  const { data } = await apiClient.get<UserSummary[]>('/api/v1/admin/users');
+  const { data } = await apiClient.get<UserSummary[]>('/api/v1/users');
   return data;
 }
 
 export async function createUser(request: CreateUserRequest): Promise<UserSummary> {
-  const { data } = await apiClient.post<UserSummary>('/api/v1/admin/users', request);
+  const { data } = await apiClient.post<UserSummary>('/api/v1/users', request);
   return data;
 }
 
 export async function resetPassword(id: number): Promise<UserSummary> {
-  const { data } = await apiClient.post<UserSummary>(`/api/v1/admin/users/${id}/reset-password`);
+  const { data } = await apiClient.post<UserSummary>(`/api/v1/users/${id}/reset-password`);
   return data;
 }
 
 export async function unlockUser(id: number): Promise<UserSummary> {
-  const { data } = await apiClient.post<UserSummary>(`/api/v1/admin/users/${id}/unlock`);
+  const { data } = await apiClient.post<UserSummary>(`/api/v1/users/${id}/unlock`);
   return data;
 }

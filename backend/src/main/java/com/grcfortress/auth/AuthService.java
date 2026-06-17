@@ -122,7 +122,7 @@ public class AuthService {
         }
 
         String jti = jwtService.extractTokenId(claims);
-        if (revokedTokenRepository.existsByJti(jti)) {
+        if (jti != null && revokedTokenRepository.existsByJti(jti)) {
             throw new AuthException("Refresh token has been revoked");
         }
 
@@ -136,7 +136,9 @@ public class AuthService {
 
         // Rotate: this refresh token is single-use. Revoking it here means a stolen and
         // already-used refresh token can't be replayed once the legitimate client refreshes.
-        revokedTokenRepository.save(new RevokedToken(jti, jwtService.extractExpiration(claims)));
+        if (jti != null) {
+            revokedTokenRepository.save(new RevokedToken(jti, jwtService.extractExpiration(claims)));
+        }
 
         auditService.record(AuditEventType.TOKEN_REFRESH, username, "Access token refreshed", ipAddress, AuditOutcome.SUCCESS);
         return issueTokens(user, ipAddress);
@@ -155,7 +157,7 @@ public class AuthService {
         String username = jwtService.extractUsername(claims);
         if (jwtService.extractTokenType(claims) == TokenType.REFRESH && !jwtService.isExpired(claims)) {
             String jti = jwtService.extractTokenId(claims);
-            if (!revokedTokenRepository.existsByJti(jti)) {
+            if (jti != null && !revokedTokenRepository.existsByJti(jti)) {
                 revokedTokenRepository.save(new RevokedToken(jti, jwtService.extractExpiration(claims)));
             }
         }

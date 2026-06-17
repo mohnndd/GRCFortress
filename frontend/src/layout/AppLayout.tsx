@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { to: '/whistleblowing', label: 'Whistleblowing' },
   { to: '/terms-and-conditions', label: 'Terms and conditions' },
   { to: '/sla', label: 'SLA configuration' },
+  { to: '/compliance-calendar', label: 'Compliance calendar' },
   { to: '/audit-trail', label: 'Audit trail' },
   { to: '/reported-issues-suggestions', label: 'Reported issue/suggestion' },
   { to: '/faq', label: 'Help & FAQ' },
@@ -167,19 +168,25 @@ export function AppLayout() {
     });
   }
 
+  const isAdmin = user?.roles.includes('ADMIN') ?? false;
+
+  const ADMIN_SUB_ITEMS = [
+    { to: '/admin', label: 'Overview', end: true },
+    { to: '/admin/users', label: 'User Management' },
+    { to: '/admin/roles', label: 'Roles & Permissions' },
+    { to: '/admin/faq', label: 'FAQ Pages' },
+    { to: '/admin/integrations', label: 'Integrations' },
+    { to: '/admin/diagnostics', label: 'Diagnostics' },
+  ];
+
   const allNavItems = [
     ...NAV_ITEMS,
-    ...(user?.roles.includes('ADMIN')
-      ? [
-          { to: '/admin', label: 'Admin' },
-          { to: '/admin/users', label: 'User management' },
-        ]
-      : []),
+    ...(isAdmin ? ADMIN_SUB_ITEMS.map((i) => ({ to: i.to, label: `Admin: ${i.label}` })) : []),
   ];
 
   const navLinks = (
     <>
-      {allNavItems.map((item) => (
+      {NAV_ITEMS.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
@@ -188,6 +195,21 @@ export function AppLayout() {
           {item.label}
         </NavLink>
       ))}
+      {isAdmin && (
+        <div className="app-nav-group">
+          <span className="app-nav-group-label">Admin</span>
+          {ADMIN_SUB_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => `app-nav-sub-item${isActive ? ' active' : ''}`}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </div>
+      )}
     </>
   );
 

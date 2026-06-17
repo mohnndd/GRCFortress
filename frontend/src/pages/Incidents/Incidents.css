@@ -92,6 +92,7 @@
 }
 
 .inc-btn-ghost:disabled { opacity: 0.6; cursor: default; }
+.inc-btn-sm { padding: 6px 10px; font-size: 0.8rem; text-decoration: none; display: inline-flex; align-items: center; }
 
 .inc-btn-danger {
   border: 1px solid #f0c0bc;

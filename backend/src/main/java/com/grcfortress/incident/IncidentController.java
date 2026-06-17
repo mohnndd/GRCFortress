@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -90,5 +92,25 @@ public class IncidentController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         incidentService.delete(id);
+    }
+
+    @GetMapping("/export")
+    public void exportCsv(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"incidents.csv\"");
+        var writer = response.getWriter();
+        writer.println("Incident Number,Title,Priority,Status,Department,Reported By,Assigned To,Detected At,Resolved At");
+        for (IncidentSummary i : incidentService.list()) {
+            writer.printf("%s,%s,%s,%s,%s,%s,%s,%s,%s%n",
+                    csv(i.incidentNumber()), csv(i.title()), csv(i.priority()), csv(i.status()),
+                    csv(i.departmentName()), csv(i.reportedBy()), csv(i.assignedTo()),
+                    i.detectedAt() != null ? i.detectedAt().toString() : "",
+                    i.resolvedAt() != null ? i.resolvedAt().toString() : "");
+        }
+    }
+
+    private static String csv(String v) {
+        if (v == null) return "";
+        return "\"" + v.replace("\"", "\"\"") + "\"";
     }
 }

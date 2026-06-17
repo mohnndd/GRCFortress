@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import {
   getEmailSettings, getSmsSettings, sendTestEmail, sendTestSms,
   updateEmailSettings, updateSmsSettings, type IntegrationSetting,
@@ -764,125 +765,103 @@ function UsersTab() {
 
 // ── Main AdminPage ─────────────────────────────────────────────────────────
 
-const TABS: { id: AdminTab; label: string; icon: string }[] = [
-  { id: 'overview', label: 'Overview', icon: '◈' },
-  { id: 'users', label: 'User Management', icon: '👤' },
-  { id: 'roles', label: 'Roles & Permissions', icon: '⊕' },
-  { id: 'faq', label: 'FAQ Pages', icon: '☰' },
-  { id: 'integrations', label: 'Integrations', icon: '⇌' },
-  { id: 'diagnostics', label: 'Diagnostics', icon: '⚙' },
-];
+function pathToTab(pathname: string): AdminTab {
+  if (pathname.startsWith('/admin/users')) return 'users';
+  if (pathname.startsWith('/admin/roles')) return 'roles';
+  if (pathname.startsWith('/admin/faq')) return 'faq';
+  if (pathname.startsWith('/admin/integrations')) return 'integrations';
+  if (pathname.startsWith('/admin/diagnostics')) return 'diagnostics';
+  return 'overview';
+}
 
 export function AdminPage() {
-  const [tab, setTab] = useState<AdminTab>('overview');
+  const { pathname } = useLocation();
+  const tab = pathToTab(pathname);
   const [showLoginDiag, setShowLoginDiag] = useState(() => localStorage.getItem('grc-show-login-dev-diagnostics') !== 'false');
 
   return (
-    <div className="adm-shell">
-      {/* Sidebar */}
-      <nav className="adm-sidebar">
-        <div className="adm-sidebar-header">
-          <span className="adm-sidebar-title">Administration</span>
+    <div className="adm-content">
+      {tab === 'overview' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>System Administration</h2>
+            <p className="adm-page-subtitle">GRC Fortress administration panel. Manage roles, integrations, and system configuration.</p>
+          </div>
+          <div className="adm-overview-grid">
+            {[
+              { title: 'User Management', desc: 'Create accounts, assign roles, reset passwords, and manage user access.', to: '/admin/users', icon: '👤' },
+              { title: 'Roles & Permissions', desc: 'Create custom roles and assign API endpoint permissions to control access levels.', to: '/admin/roles', icon: '⊕' },
+              { title: 'FAQ Pages', desc: 'Manage the public knowledge base. Create, edit, and publish help pages for users.', to: '/admin/faq', icon: '☰' },
+              { title: 'Integrations', desc: 'Configure email (SMTP) and SMS gateways used for notifications and alerts.', to: '/admin/integrations', icon: '⇌' },
+              { title: 'Diagnostics', desc: 'Developer tools and login screen diagnostics settings.', to: '/admin/diagnostics', icon: '⚙' },
+            ].map((card) => (
+              <Link key={card.to} to={card.to} className="adm-overview-card" style={{ textDecoration: 'none' }}>
+                <span className="adm-overview-icon">{card.icon}</span>
+                <h4>{card.title}</h4>
+                <p>{card.desc}</p>
+              </Link>
+            ))}
+          </div>
         </div>
-        <ul className="adm-nav-list">
-          {TABS.map((t) => (
-            <li key={t.id}>
-              <button
-                className={`adm-nav-item${tab === t.id ? ' adm-nav-item--active' : ''}`}
-                onClick={() => setTab(t.id)}
-              >
-                <span className="adm-nav-icon">{t.icon}</span>
-                {t.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      )}
 
-      {/* Content */}
-      <div className="adm-content">
-        {tab === 'overview' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>System Overview</h2>
-              <p className="adm-page-subtitle">GRC Fortress administration panel. Manage roles, integrations, and system configuration.</p>
-            </div>
-            <div className="adm-overview-grid">
-              {[
-                { title: 'User Management', desc: 'Create accounts, assign roles, reset passwords, and manage user access.', tab: 'users' as AdminTab, icon: '👤' },
-                { title: 'Roles & Permissions', desc: 'Create custom roles and assign API endpoint permissions to control access levels.', tab: 'roles' as AdminTab, icon: '⊕' },
-                { title: 'FAQ Pages', desc: 'Manage the public knowledge base. Create, edit, and publish help pages for users.', tab: 'faq' as AdminTab, icon: '☰' },
-                { title: 'Integrations', desc: 'Configure email (SMTP) and SMS gateways used for notifications and alerts.', tab: 'integrations' as AdminTab, icon: '⇌' },
-                { title: 'Diagnostics', desc: 'Developer tools and login screen diagnostics settings.', tab: 'diagnostics' as AdminTab, icon: '⚙' },
-              ].map((card) => (
-                <div key={card.tab} className="adm-overview-card" onClick={() => setTab(card.tab)}>
-                  <span className="adm-overview-icon">{card.icon}</span>
-                  <h4>{card.title}</h4>
-                  <p>{card.desc}</p>
-                </div>
-              ))}
-            </div>
+      {tab === 'users' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>User Management</h2>
+            <p className="adm-page-subtitle">Create accounts, assign roles, reset passwords, and manage user status.</p>
           </div>
-        )}
+          <UsersTab />
+        </div>
+      )}
 
-        {tab === 'users' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>User Management</h2>
-              <p className="adm-page-subtitle">Create accounts, assign roles, reset passwords, and manage user status.</p>
-            </div>
-            <UsersTab />
+      {tab === 'roles' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>Roles & Permissions</h2>
+            <p className="adm-page-subtitle">Define custom roles and assign endpoint-level access permissions.</p>
           </div>
-        )}
+          <RolesTab />
+        </div>
+      )}
 
-        {tab === 'roles' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>Roles & Permissions</h2>
-              <p className="adm-page-subtitle">Define custom roles and assign endpoint-level access permissions.</p>
-            </div>
-            <RolesTab />
+      {tab === 'faq' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>FAQ Pages</h2>
+            <p className="adm-page-subtitle">Create and manage knowledge base pages visible to all users in the FAQ section.</p>
           </div>
-        )}
+          <FaqTab />
+        </div>
+      )}
 
-        {tab === 'faq' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>FAQ Pages</h2>
-              <p className="adm-page-subtitle">Create and manage knowledge base pages visible to all users in the FAQ section.</p>
-            </div>
-            <FaqTab />
+      {tab === 'integrations' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>Integrations</h2>
+            <p className="adm-page-subtitle">Configure outbound email and SMS gateways for system notifications.</p>
           </div>
-        )}
+          <IntegrationsTab />
+        </div>
+      )}
 
-        {tab === 'integrations' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>Integrations</h2>
-              <p className="adm-page-subtitle">Configure outbound email and SMS gateways for system notifications.</p>
-            </div>
-            <IntegrationsTab />
+      {tab === 'diagnostics' && (
+        <div>
+          <div className="adm-page-header">
+            <h2>Diagnostics</h2>
+            <p className="adm-page-subtitle">Developer and system diagnostic settings.</p>
           </div>
-        )}
-
-        {tab === 'diagnostics' && (
-          <div>
-            <div className="adm-page-header">
-              <h2>Diagnostics</h2>
-              <p className="adm-page-subtitle">Developer and system diagnostic settings.</p>
-            </div>
-            <div className="adm-card">
-              <h3 className="adm-card-title">Login Screen Diagnostics</h3>
-              <p className="adm-card-note">The backend connection panel on the login screen is intended for local development and initial setup only.</p>
-              <label className="adm-checkbox-row">
-                <input type="checkbox" checked={showLoginDiag}
-                  onChange={(e) => { setShowLoginDiag(e.target.checked); localStorage.setItem('grc-show-login-dev-diagnostics', String(e.target.checked)); }} />
-                Show connection diagnostics on the login screen
-              </label>
-            </div>
+          <div className="adm-card">
+            <h3 className="adm-card-title">Login Screen Diagnostics</h3>
+            <p className="adm-card-note">The backend connection panel on the login screen is intended for local development and initial setup only.</p>
+            <label className="adm-checkbox-row">
+              <input type="checkbox" checked={showLoginDiag}
+                onChange={(e) => { setShowLoginDiag(e.target.checked); localStorage.setItem('grc-show-login-dev-diagnostics', String(e.target.checked)); }} />
+              Show connection diagnostics on the login screen
+            </label>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

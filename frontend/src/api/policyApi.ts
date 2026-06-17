@@ -206,3 +206,20 @@ export async function postMessage(stepId: number, message: string): Promise<Step
   const { data } = await apiClient.post<StepMessage>(`/api/v1/approval-steps/${stepId}/messages`, { message });
   return data;
 }
+
+export interface PolicyAcknowledgement {
+  id: number;
+  username: string;
+  fullName: string | null;
+  versionNumber: string | null;
+  acknowledgedAt: string;
+}
+
+export async function acknowledgePoliciy(policyId: number): Promise<void> {
+  await apiClient.post(`/api/v1/policies/${policyId}/acknowledge`);
+}
+
+export async function listAcknowledgements(policyId: number): Promise<PolicyAcknowledgement[]> {
+  const { data } = await apiClient.get<PolicyAcknowledgement[]>(`/api/v1/policies/${policyId}/acknowledgements`);
+  return data;
+}

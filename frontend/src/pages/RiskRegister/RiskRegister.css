@@ -789,6 +789,43 @@
   margin-top: auto;
 }
 
+.rr-btn-sm {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rr-heatmap-wrap {
+  margin-bottom: 24px;
+}
+
+.rr-heatmap-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 8px;
+}
+
+.rr-heatmap-svg {
+  display: block;
+  overflow: visible;
+}
+
+.rr-heatmap-clear {
+  margin-top: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
 @media (max-width: 1080px) {
   .rr-page { flex-direction: column; overflow: auto; }
   .rr-page--with-drawer .rr-main { max-width: none; }

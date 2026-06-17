@@ -38,12 +38,15 @@ public class PolicyController {
     private final PolicyService policyService;
     private final PolicyFileService fileService;
     private final PolicyVersionFileRepository versionFileRepository;
+    private final PolicyAcknowledgementRepository acknowledgementRepository;
 
     public PolicyController(PolicyService policyService, PolicyFileService fileService,
-                            PolicyVersionFileRepository versionFileRepository) {
+                            PolicyVersionFileRepository versionFileRepository,
+                            PolicyAcknowledgementRepository acknowledgementRepository) {
         this.policyService = policyService;
         this.fileService = fileService;
         this.versionFileRepository = versionFileRepository;
+        this.acknowledgementRepository = acknowledgementRepository;
     }
 
     @GetMapping
@@ -103,6 +106,33 @@ public class PolicyController {
             case "WEBP" -> "image/webp";
             default     -> "application/octet-stream";
         };
+    }
+
+    // Acknowledgements
+
+    record AckDto(Long id, String username, String fullName, String versionNumber, java.time.Instant acknowledgedAt) {}
+
+    @GetMapping("/{id}/acknowledgements")
+    public List<AckDto> listAcknowledgements(@PathVariable Long id) {
+        return acknowledgementRepository.findAllByPolicyIdOrderByAcknowledgedAtDesc(id)
+                .stream().map(a -> new AckDto(a.getId(), a.getUsername(), a.getFullName(),
+                        a.getVersionNumber(), a.getAcknowledgedAt())).toList();
+    }
+
+    @PostMapping("/{id}/acknowledge")
+    public org.springframework.http.ResponseEntity<AckDto> acknowledge(
+            @PathVariable Long id,
+            @RequestParam(value = "versionNumber", required = false) String versionNumber,
+            java.security.Principal principal) {
+        // Upsert: replace existing ack so users can re-acknowledge a newer version
+        acknowledgementRepository.findByPolicyIdAndUsername(id, principal.getName())
+                .ifPresent(a -> acknowledgementRepository.delete(a));
+        // Resolve full name from user context if available
+        var ack = new PolicyAcknowledgement(id, versionNumber, principal.getName(), principal.getName());
+        ack = acknowledgementRepository.save(ack);
+        return org.springframework.http.ResponseEntity.ok(
+                new AckDto(ack.getId(), ack.getUsername(), ack.getFullName(),
+                        ack.getVersionNumber(), ack.getAcknowledgedAt()));
     }
 
     // Pre-approval

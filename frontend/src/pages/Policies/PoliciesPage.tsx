@@ -12,8 +12,11 @@ import {
   preReject,
   rejectStep,
   uploadPolicy,
+  acknowledgePoliciy,
+  listAcknowledgements,
   type ApprovalCycleDetail,
   type ApprovalStepDetail,
+  type PolicyAcknowledgement,
   type PolicyDetail,
   type PolicyListItem,
   type PolicyStatus,
@@ -155,6 +158,12 @@ export function PoliciesPage() {
   const [newMessage, setNewMessage] = useState<Record<number, string>>({});
   const [sendingMsg, setSendingMsg] = useState<Record<number, boolean>>({});
 
+  // Acknowledgements
+  const [acks, setAcks] = useState<PolicyAcknowledgement[]>([]);
+  const [ackLoading, setAckLoading] = useState(false);
+  const [ackDone, setAckDone] = useState(false);
+  const [showAcks, setShowAcks] = useState(false);
+
   // Pre-approval actions
   const [preActionVersionId, setPreActionVersionId] = useState<number | null>(null);
   const [preActionType, setPreActionType] = useState<'approve' | 'reject' | null>(null);
@@ -253,6 +262,9 @@ export function PoliciesPage() {
     setActionStep(null);
     setActionType(null);
     setPreActionVersionId(null);
+    setAcks([]);
+    setAckDone(false);
+    setShowAcks(false);
     setDetailLoading(true);
     try {
       const detail = await getPolicy(policy.id);
@@ -362,6 +374,31 @@ export function PoliciesPage() {
     } finally {
       setPreSaving(false);
     }
+  }
+
+  // ── Acknowledgements ─────────────────────────────────────────────────────
+
+  async function handleAcknowledge() {
+    if (!selectedPolicy) return;
+    setAckLoading(true);
+    try {
+      await acknowledgePoliciy(selectedPolicy.id);
+      setAckDone(true);
+    } catch {
+      // ignore; policy might already be acknowledged
+      setAckDone(true);
+    } finally {
+      setAckLoading(false);
+    }
+  }
+
+  async function toggleAcks() {
+    if (!selectedPolicy) return;
+    if (!showAcks) {
+      const list = await listAcknowledgements(selectedPolicy.id);
+      setAcks(list);
+    }
+    setShowAcks((v) => !v);
   }
 
   // ── Discussion thread ────────────────────────────────────────────────────
@@ -634,6 +671,38 @@ export function PoliciesPage() {
                   )}
                   {selectedPolicy.description && (
                     <p className="pol-detail-desc">{selectedPolicy.description}</p>
+                  )}
+
+                  {/* Acknowledgement section */}
+                  {selectedPolicy.status === 'APPROVED' && (
+                    <div className="pol-ack-section">
+                      {!user?.roles.some((r) => r === 'ADMIN' || r === 'COMPLIANCE_OFFICER') && (
+                        <button
+                          className={`pol-ack-btn${ackDone ? ' pol-ack-btn--done' : ''}`}
+                          onClick={handleAcknowledge}
+                          disabled={ackLoading || ackDone}
+                        >
+                          {ackDone ? '✓ Acknowledged' : ackLoading ? 'Saving…' : 'Acknowledge this policy'}
+                        </button>
+                      )}
+                      {(user?.roles.includes('ADMIN') || user?.roles.includes('COMPLIANCE_OFFICER')) && (
+                        <button className="pol-btn-ghost pol-btn-sm" onClick={toggleAcks}>
+                          {showAcks ? 'Hide acknowledgements' : `View acknowledgements (${acks.length > 0 ? acks.length : '…'})`}
+                        </button>
+                      )}
+                      {showAcks && (
+                        <div className="pol-ack-list">
+                          {acks.length === 0
+                            ? <p className="pol-thread-empty">No acknowledgements yet.</p>
+                            : acks.map((a) => (
+                              <div key={a.id} className="pol-ack-item">
+                                <span className="pol-ack-name">{a.fullName ?? a.username}</span>
+                                <span className="pol-ack-time">{new Date(a.acknowledgedAt).toLocaleDateString()}</span>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {/* Version tabs */}

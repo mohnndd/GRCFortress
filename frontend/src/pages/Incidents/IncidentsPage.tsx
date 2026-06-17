@@ -6,6 +6,7 @@ import {
   deleteIncident,
   fetchNotificationAttachment,
   getIncident,
+  incidentExportUrl,
   listIncidents,
   setRca,
   updateIncident,
@@ -328,6 +329,7 @@ export function IncidentsPage() {
               <option value="">All priorities</option>
               {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
+            <a className="inc-btn-ghost inc-btn-sm" href={incidentExportUrl()} download>↓ CSV</a>
             <button className="inc-btn-primary" onClick={openNew}>+ New incident</button>
           </div>
         </div>

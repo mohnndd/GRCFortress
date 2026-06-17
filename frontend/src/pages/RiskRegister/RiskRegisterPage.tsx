@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useAuth } from '../../auth/AuthContext';
 import {
   createRisk,
@@ -6,6 +6,7 @@ import {
   listRiskDomains,
   listRisks,
   updateRisk,
+  riskExportUrl,
   type RiskCreateRequest,
   type RiskDomain,
   type RiskSummary,
@@ -85,6 +86,99 @@ function calcScore(likelihood: number, fi: number, op: number, re: number, rp: n
   return likelihood * Math.max(fi, op, re, rp);
 }
 
+// ── Risk Heat Map ──────────────────────────────────────────────────────────
+
+function heatColor(likelihood: number, impact: number): string {
+  const score = likelihood * impact;
+  if (score <= 5) return '#86efac';   // green — low
+  if (score <= 10) return '#fde68a';  // amber — medium
+  if (score <= 15) return '#fb923c';  // orange — high
+  return '#f87171';                    // red — critical
+}
+
+function RiskHeatMap({
+  risks,
+  onCellClick,
+  activeCell,
+}: {
+  risks: RiskSummary[];
+  onCellClick: (l: number, i: number) => void;
+  activeCell: { l: number; i: number } | null;
+}) {
+  const counts = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const r of risks) {
+      const l = r.residualLikelihood;
+      const i = r.residualCompositeImpact;
+      const key = `${l}-${i}`;
+      map[key] = (map[key] ?? 0) + 1;
+    }
+    return map;
+  }, [risks]);
+
+  const CELL = 52;
+  const PAD = 32;
+  const W = CELL * 5 + PAD;
+  const H = CELL * 5 + PAD;
+
+  return (
+    <div className="rr-heatmap-wrap">
+      <p className="rr-heatmap-title">Risk Heat Map — Residual</p>
+      <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="rr-heatmap-svg">
+        {/* Y axis label */}
+        <text transform={`translate(10, ${PAD + CELL * 2.5}) rotate(-90)`} textAnchor="middle" fontSize={10} fill="var(--color-text-muted)">
+          Likelihood →
+        </text>
+        {/* X axis label */}
+        <text x={PAD + CELL * 2.5} y={H - 4} textAnchor="middle" fontSize={10} fill="var(--color-text-muted)">
+          Impact →
+        </text>
+
+        {[5, 4, 3, 2, 1].map((l, row) =>
+          [1, 2, 3, 4, 5].map((imp, col) => {
+            const x = PAD + col * CELL;
+            const y = row * CELL;
+            const count = counts[`${l}-${imp}`] ?? 0;
+            const isActive = activeCell?.l === l && activeCell?.i === imp;
+            return (
+              <g key={`${l}-${imp}`} onClick={() => onCellClick(l, imp)} style={{ cursor: 'pointer' }}>
+                <rect
+                  x={x} y={y} width={CELL - 2} height={CELL - 2}
+                  rx={4} fill={heatColor(l, imp)}
+                  stroke={isActive ? '#1e3a5f' : 'transparent'} strokeWidth={2}
+                  opacity={activeCell && !isActive ? 0.55 : 1}
+                />
+                {count > 0 && (
+                  <text
+                    x={x + CELL / 2 - 1} y={y + CELL / 2 + 1}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize={13} fontWeight={700} fill="#1e293b"
+                  >
+                    {count}
+                  </text>
+                )}
+              </g>
+            );
+          })
+        )}
+
+        {/* Axis tick labels */}
+        {[5, 4, 3, 2, 1].map((l, row) => (
+          <text key={l} x={PAD - 4} y={row * CELL + CELL / 2 + 1} textAnchor="end" dominantBaseline="middle" fontSize={10} fill="var(--color-text-muted)">{l}</text>
+        ))}
+        {[1, 2, 3, 4, 5].map((imp, col) => (
+          <text key={imp} x={PAD + col * CELL + CELL / 2 - 1} y={CELL * 5 + 14} textAnchor="middle" fontSize={10} fill="var(--color-text-muted)">{imp}</text>
+        ))}
+      </svg>
+      {activeCell && (
+        <button className="rr-heatmap-clear" onClick={() => onCellClick(activeCell.l, activeCell.i)}>
+          ✕ Clear filter
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────────────
 
 export function RiskRegisterPage() {
@@ -103,6 +197,7 @@ export function RiskRegisterPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState('');
   const [filterDomain, setFilterDomain] = useState('');
+  const [heatCell, setHeatCell] = useState<{ l: number; i: number } | null>(null);
 
   useEffect(() => {
     Promise.all([listRisks(), listRiskDomains()])
@@ -201,9 +296,14 @@ export function RiskRegisterPage() {
     }
   }
 
+  function toggleHeatCell(l: number, i: number) {
+    setHeatCell((prev) => prev?.l === l && prev?.i === i ? null : { l, i });
+  }
+
   const filtered = risks.filter((r) => {
     if (filterStatus && r.status !== filterStatus) return false;
     if (filterDomain && String(r.domainId) !== filterDomain) return false;
+    if (heatCell && (r.residualLikelihood !== heatCell.l || r.residualCompositeImpact !== heatCell.i)) return false;
     return true;
   });
 
@@ -237,12 +337,17 @@ export function RiskRegisterPage() {
               <option value="">All domains</option>
               {domains.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
+            <a className="rr-btn-secondary rr-btn-sm" href={riskExportUrl()} download>↓ CSV</a>
             {isAdmin && <button className="rr-btn-primary" onClick={openNew}>+ New risk</button>}
           </div>
         </div>
 
         {error && <p className="rr-error">{error}</p>}
         {loading && <p className="rr-state">Loading risk register…</p>}
+
+        {!loading && risks.length > 0 && (
+          <RiskHeatMap risks={risks} onCellClick={toggleHeatCell} activeCell={heatCell} />
+        )}
 
         {!loading && filtered.length === 0 && (
           <p className="rr-state">{risks.length === 0 ? 'No risks recorded yet.' : 'No risks match the current filters.'}</p>

@@ -6,7 +6,6 @@ import { AppLayout } from './layout/AppLayout';
 import { LoginPage } from './pages/Login/LoginPage';
 import { HomePage } from './pages/Home/HomePage';
 import { AdminPage } from './pages/Admin/AdminPage';
-import { UsersPage } from './pages/Admin/UsersPage';
 import { ChangePasswordPage } from './pages/ChangePassword/ChangePasswordPage';
 import { DepartmentsPage } from './pages/Departments/DepartmentsPage';
 import { TermsPage } from './pages/Terms/TermsPage';
@@ -25,6 +24,7 @@ import { ObservationsPage } from './pages/Observations/ObservationsPage';
 import { DelegationPage } from './pages/Delegation/DelegationPage';
 import { IncidentsPage } from './pages/Incidents/IncidentsPage';
 import { FaqPublicPage } from './pages/Faq/FaqPage';
+import { ComplianceCalendarPage } from './pages/ComplianceCalendar/ComplianceCalendarPage';
 
 function App() {
   return (
@@ -63,24 +63,20 @@ function App() {
           <Route path="/terms-and-conditions" element={<TermsConditionsPage />} />
           <Route path="/sla" element={<SlaPage />} />
           <Route path="/audit-trail" element={<AuditTrailPage />} />
+          <Route path="/compliance-calendar" element={<ComplianceCalendarPage />} />
           <Route path="/reported-issues-suggestions" element={<ReportedItemsPage />} />
           <Route path="/faq" element={<FaqPublicPage />} />
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminPage />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute>
-                <UsersPage />
-              </AdminRoute>
-            }
-          />
+          {['/admin', '/admin/users', '/admin/roles', '/admin/faq', '/admin/integrations', '/admin/diagnostics'].map((path) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
+              }
+            />
+          ))}
         </Route>
 
         <Route path="*" element={<Navigate to="/home" replace />} />

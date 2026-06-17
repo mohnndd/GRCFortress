@@ -955,3 +955,50 @@
 }
 
 .pol-empty p { margin-bottom: 16px; }
+
+.pol-ack-section {
+  margin: 12px 0 16px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.pol-ack-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 7px;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pol-ack-btn--done {
+  border-color: #059669;
+  color: #059669;
+  cursor: default;
+}
+
+.pol-ack-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.pol-ack-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pol-ack-name { font-weight: 600; color: var(--color-text); }
+.pol-ack-time { color: var(--color-text-muted); }

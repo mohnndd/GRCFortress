@@ -100,3 +100,7 @@ export async function updateRisk(id: number, req: RiskCreateRequest): Promise<Ri
 export async function deleteRisk(id: number): Promise<void> {
   await apiClient.delete(`/api/v1/risks/${id}`);
 }
+
+export function riskExportUrl(): string {
+  return `${apiClient.defaults.baseURL}/api/v1/risks/export`;
+}

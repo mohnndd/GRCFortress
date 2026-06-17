@@ -115,3 +115,7 @@ export async function setRca(id: number, req: RcaRequest): Promise<IncidentDetai
 export async function deleteIncident(id: number): Promise<void> {
   await apiClient.delete(`/api/v1/incidents/${id}`);
 }
+
+export function incidentExportUrl(): string {
+  return `${apiClient.defaults.baseURL}/api/v1/incidents/export`;
+}

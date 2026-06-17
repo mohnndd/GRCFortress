@@ -1,5 +1,7 @@
 package com.grcfortress.risk;
 
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -59,5 +61,26 @@ public class RiskController {
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         riskService.delete(id);
+    }
+
+    @GetMapping("/export")
+    public void exportCsv(HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"risks.csv\"");
+        var writer = response.getWriter();
+        writer.println("Risk Number,Title,Domain,Category,Status,Inherent Score,Residual Score,Owner,Next Review");
+        for (RiskSummary r : riskService.listRisks()) {
+            writer.printf("%s,%s,%s,%s,%s,%d,%d,%s,%s%n",
+                    csv(r.riskNumber()), csv(r.title()),
+                    csv(r.domainName()), csv(r.categoryName()),
+                    csv(r.status()), r.inherentScore(), r.residualScore(),
+                    csv(r.riskOwnerUsername()),
+                    r.nextReviewDate() != null ? r.nextReviewDate() : "");
+        }
+    }
+
+    private static String csv(String v) {
+        if (v == null) return "";
+        return "\"" + v.replace("\"", "\"\"") + "\"";
     }
 }

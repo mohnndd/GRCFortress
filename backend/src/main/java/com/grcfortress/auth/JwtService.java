@@ -3,6 +3,7 @@ package com.grcfortress.auth;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -47,6 +48,7 @@ public class JwtService {
         Instant now = Instant.now();
         return Jwts.builder()
                 .subject(username)
+                .id(UUID.randomUUID().toString())
                 .claim(CLAIM_TYPE, type.name())
                 .claim(CLAIM_ROLES, roles)
                 .issuedAt(java.util.Date.from(now))
@@ -65,6 +67,14 @@ public class JwtService {
 
     public String extractUsername(Claims claims) {
         return claims.getSubject();
+    }
+
+    public String extractTokenId(Claims claims) {
+        return claims.getId();
+    }
+
+    public Instant extractExpiration(Claims claims) {
+        return claims.getExpiration().toInstant();
     }
 
     public TokenType extractTokenType(Claims claims) {

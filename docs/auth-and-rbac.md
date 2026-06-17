@@ -17,9 +17,14 @@
      `MFA_VERIFICATION_FAILURE`.
 
 3. `POST /api/v1/auth/refresh` with `{ refreshToken }` → new access/refresh
-   token pair. Audit event: `TOKEN_REFRESH`.
+   token pair. Audit event: `TOKEN_REFRESH`. Refresh tokens are single-use:
+   the old token's `jti` is revoked (added to the `revoked_token` denylist)
+   as part of issuing the new pair, see "Refresh-token revocation" below.
 
-4. `GET /api/v1/auth/me` → current user info (requires `ACCESS` token).
+4. `POST /api/v1/auth/logout` with `{ refreshToken }` → revokes that refresh
+   token so it can no longer be exchanged. Audit event: `LOGOUT`.
+
+5. `GET /api/v1/auth/me` → current user info (requires `ACCESS` token).
 
 Tokens are signed HMAC JWTs (`jjwt`), configured via `JwtProperties`
 (`grcfortress.jwt.*`): `secret`, `access-token-ttl-minutes`,
@@ -65,6 +70,81 @@ migration (`INSERT INTO roles ...`) and document it here.
 `@CreatedBy`/`@LastModifiedBy` on every `AuditableEntity` from the
 authenticated username (or `"system"` for unauthenticated/background
 operations).
+
+### Tamper-evidence (immutability)
+
+`audit_log` is append-only at the database level (`V13__audit_log_immutability.sql`):
+a trigger rejects `UPDATE`/`DELETE` against the table outright, for any role
+— including the application's own DB user — so deleting or editing an entry
+requires dropping the trigger, which is itself an auditable DBA action
+outside the application.
+
+On top of that, every row is hash-chained: `AuditLog.entryHash` is a SHA-256
+hash of the row's own content plus the previous row's `entryHash`
+(`AuditLog.computeHash`). Altering a past row (e.g. via a restored backup)
+breaks the chain for every row written after it. `AuditService.verifyChain()`
+walks the table and recomputes each hash to detect this, exposed at
+`GET /api/v1/audit-trail/integrity` (`ADMIN`/`AUDITOR`/`COMPLIANCE_OFFICER`).
+Rows written before this migration have no hash — the chain can only attest
+to entries from the upgrade point forward, which is inherent to retrofitting
+a hash chain onto pre-existing data.
+
+`AuditService.record()` is `synchronized` to keep the chain strictly
+ordered; this assumes a single application instance. A multi-instance
+deployment would need the chain link enforced in the database itself (e.g.
+an advisory lock) instead of in the JVM.
+
+## Refresh-token revocation
+
+Tokens are stateless JWTs, so invalidating one before it expires needs a
+server-side denylist: `revoked_token` (`jti` unique, `expires_at`). Every JWT
+now carries a `jti` claim (`JwtService.buildToken`). Two things populate the
+denylist:
+
+- `POST /api/v1/auth/logout` — revokes the refresh token the client sends.
+- `POST /api/v1/auth/refresh` — rotates on every use: the refresh token just
+  spent is revoked as part of issuing the new pair, so a captured/replayed
+  refresh token only works once.
+
+`AuthService.refresh()` rejects a token whose `jti` is already in
+`revoked_token` with "Refresh token has been revoked". `RevokedTokenCleanupTask`
+runs daily (`@Scheduled`, 03:00) and deletes rows past their `expires_at`, so
+the table doesn't grow unbounded — once a token would have expired anyway,
+there's nothing left to deny.
+
+Access tokens are short-lived and are not checked against the denylist on
+every request (that would turn a stateless JWT check into a DB hit per
+request); only the longer-lived refresh token is revocable. A user who needs
+an access token invalidated immediately should be disabled or have their
+account locked via the admin endpoints, which `AuthService.refresh()` and
+`AuthService.login()` both check.
+
+## Account lockout
+
+`AuthService.login()` increments `User.failedLoginAttempts` on every bad
+password and locks the account (`accountLocked = true`) once
+`grcfortress.security.lockout.max-failed-attempts` (default `3`, env
+`ACCOUNT_LOCKOUT_MAX_ATTEMPTS`) is reached. Locked accounts can only be
+unlocked by an admin (`POST /api/v1/admin/users/{id}/unlock`, see below) —
+there is no auto-unlock timer by design. Audit events: `ACCOUNT_LOCKED`,
+`ACCOUNT_UNLOCKED`.
+
+## Admin user management & forced password change
+
+`UserAdminController` (`/api/v1/admin/users`, `ADMIN` only):
+
+- `GET /` — list users.
+- `POST /` — create a user with a server-generated temporary password.
+- `POST /{id}/reset-password` — generate a new temporary password.
+- `POST /{id}/unlock` — clear `accountLocked`/`failedLoginAttempts`.
+
+Generated passwords are **never** returned in the API response or logged —
+they're emailed directly to the user's address via `NotificationService`. If
+the email integration isn't configured, the whole operation is rolled back
+(no orphaned account with an unreachable password). Both flows set
+`User.mustChangePassword = true`; the frontend redirects the user to
+`/change-password` on next login until they call
+`POST /api/v1/auth/change-password` (audit event `PASSWORD_CHANGED`).
 
 ## Default admin account
 

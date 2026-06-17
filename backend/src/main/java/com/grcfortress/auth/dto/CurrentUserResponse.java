@@ -6,6 +6,7 @@ public record CurrentUserResponse(
         String username,
         String email,
         String fullName,
-        Set<String> roles
+        Set<String> roles,
+        boolean mustChangePassword
 ) {
 }

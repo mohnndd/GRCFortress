@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.grcfortress.auth.dto.ChangePasswordRequest;
 import com.grcfortress.auth.dto.CurrentUserResponse;
 import com.grcfortress.auth.dto.LoginRequest;
 import com.grcfortress.auth.dto.LoginResponse;
@@ -49,10 +50,24 @@ public class AuthController {
         return authService.refresh(request.refreshToken(), clientIp(httpRequest));
     }
 
+    @PostMapping("/logout")
+    @Operation(summary = "Revoke a refresh token so it can no longer be used to obtain new access tokens")
+    public void logout(@Valid @RequestBody RefreshRequest request, HttpServletRequest httpRequest) {
+        authService.logout(request.refreshToken(), clientIp(httpRequest));
+    }
+
     @GetMapping("/me")
     @Operation(summary = "Get the currently authenticated user's profile and roles")
     public CurrentUserResponse currentUser(Authentication authentication) {
         return authService.currentUser(authentication.getName());
+    }
+
+    @PostMapping("/change-password")
+    @Operation(summary = "Change the current user's own password")
+    public void changePassword(@Valid @RequestBody ChangePasswordRequest request,
+                                Authentication authentication,
+                                HttpServletRequest httpRequest) {
+        authService.changePassword(authentication.getName(), request.currentPassword(), request.newPassword(), clientIp(httpRequest));
     }
 
     private String clientIp(HttpServletRequest request) {

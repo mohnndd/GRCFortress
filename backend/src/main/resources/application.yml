@@ -57,6 +57,10 @@ grcfortress:
       # MUST be overridden via ENCRYPTION_KEY in any shared/production
       # deployment. Generate one with: openssl rand -base64 32
       key: ${ENCRYPTION_KEY:F1HAFVgYR75sMmaHMYODkDTCwUOKnTVtKSJQ+J2FMI4=}
+    lockout:
+      # Account is locked after this many consecutive failed login attempts
+      # and must be unlocked by an admin (Admin > User management).
+      max-failed-attempts: ${ACCOUNT_LOCKOUT_MAX_ATTEMPTS:3}
   mfa:
     # SECURITY: bypass is a development/initial-setup convenience only.
     # It MUST be disabled (grcfortress.mfa.bypass-enabled=false) before any

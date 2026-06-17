@@ -6,6 +6,8 @@ import { AppLayout } from './layout/AppLayout';
 import { LoginPage } from './pages/Login/LoginPage';
 import { HomePage } from './pages/Home/HomePage';
 import { AdminPage } from './pages/Admin/AdminPage';
+import { UsersPage } from './pages/Admin/UsersPage';
+import { ChangePasswordPage } from './pages/ChangePassword/ChangePasswordPage';
 import { DepartmentsPage } from './pages/Departments/DepartmentsPage';
 import { TermsPage } from './pages/Terms/TermsPage';
 import { TermsConditionsPage } from './pages/TermsConditions/TermsConditionsPage';
@@ -30,6 +32,14 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePasswordPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           element={
@@ -60,6 +70,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute>
+                <UsersPage />
               </AdminRoute>
             }
           />
